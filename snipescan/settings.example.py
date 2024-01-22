@@ -17,7 +17,7 @@ API_KEY = os.getenv('API_KEY')
 
 # Logging configuration
 LOG_LEVEL = 'DEBUG'
-LOG_FILE_LEVEL = 'DEBUG'
+LOG_FILE_LEVEL = 'INFO'
 LOG_NAME = 'snipescan.log'
 LOG_SIZE = 1024
 LOG_COUNT = 3
