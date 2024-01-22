@@ -1,5 +1,6 @@
 """A simple program to import assets into SnipeIT"""
 
+import logging
 
 def main():
     """Main function to load the program and get things started."""
