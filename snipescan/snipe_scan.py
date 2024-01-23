@@ -1,9 +1,13 @@
 """A simple program to import assets into SnipeIT"""
 
+import sys
 import logging
 import logging.config
 
+from PyQt6.QtWidgets import QApplication
+
 import settings
+from ui import Window
 
 
 def main():
@@ -14,6 +18,14 @@ def main():
     logger = logging.getLogger('snipescan')
     logger.info('Snipe scan starting')
     logger.debug('Snipe URL: %s', settings.SNIPE_URL)
+
+    app = QApplication(sys.argv)
+    win = Window()
+    win.show()
+    app.exec()
+    
+
+
 
 if __name__ == '__main__':
     main()
