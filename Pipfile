@@ -5,7 +5,8 @@ name = "pypi"
 
 [packages]
 python-dotenv = "~=1.0"
-PySide2 = "*"
+PySide2 = "~=5.15"
+requests = "~=2.31"
 
 [dev-packages]
-pyqt5-tools = "*"
+pyqt5-tools = "~=5.15"
