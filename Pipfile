@@ -5,8 +5,7 @@ name = "pypi"
 
 [packages]
 python-dotenv = "~=1.0"
-pyqt6 = "*"
-PySide6 = "*"
+PySide2 = "*"
 
 [dev-packages]
-pyqt6-tools = "*"
+pyqt5-tools = "*"

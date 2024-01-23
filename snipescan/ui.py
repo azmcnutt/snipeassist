@@ -1,6 +1,6 @@
 import sys
 
-from PyQt6.QtWidgets import QMainWindow
+from PySide2.QtWidgets import QMainWindow
 
 from ui_snipescan import Ui_MainWindow
 
@@ -11,4 +11,4 @@ class Window(QMainWindow, Ui_MainWindow):
         self.connectSignalsSlots()
     
     def connectSignalsSlots(self):
-        self.actione_Xit.triggered.connect(self.close)
+        self.action_Exit.triggered.connect(self.close)

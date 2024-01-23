@@ -4,7 +4,7 @@ import sys
 import logging
 import logging.config
 
-from PyQt6.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 
 import settings
 from ui import Window
@@ -22,9 +22,7 @@ def main():
     app = QApplication(sys.argv)
     win = Window()
     win.show()
-    app.exec()
-    
-
+    app.exec_()
 
 
 if __name__ == '__main__':

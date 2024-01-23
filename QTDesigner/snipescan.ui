@@ -13,7 +13,44 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="groupBoxRequired">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>801</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Required Items</string>
+    </property>
+    <widget class="QLabel" name="labelCompany">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Company:</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxCompany">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>69</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -27,14 +64,20 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actione_Xit"/>
+    <addaction name="action_Save"/>
+    <addaction name="action_Exit"/>
    </widget>
    <addaction name="menu_File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actione_Xit">
+  <action name="action_Exit">
    <property name="text">
     <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="action_Save">
+   <property name="text">
+    <string>&amp;Save</string>
    </property>
   </action>
  </widget>
