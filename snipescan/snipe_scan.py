@@ -5,7 +5,7 @@ import logging
 import logging.config
 import pprint
 
-from PySide2.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 import settings
 from ui import Window
@@ -40,7 +40,7 @@ def main():
     app = QApplication(sys.argv)
     win = Window()
     win.show()
-    app.exec_()
+    app.exec()
 
 
 if __name__ == '__main__':
