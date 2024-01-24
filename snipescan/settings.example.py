@@ -15,6 +15,19 @@ SNIPE_URL = os.getenv('SNIPE_URL')
 # Environment Variables or using dotenv with a .env file.
 API_KEY = os.getenv('API_KEY')
 
+# Save settings on exit
+SAVE_ON_EXIT = True
+
+# Ask before quit
+ASK_BEFORE_QUIT = True
+
+# Default values for the scanning form
+DEFAULT_STATUS = 'Ready to Deploy'
+# DEFAULT_COMPANY = ''
+# DEFUALT_MODEL = ''
+# DEFAULT_LOCATION = ''
+# DEFAULT_SUPPLIER = ''
+
 # Logging configuration
 LOG_LEVEL = 'DEBUG'
 LOG_FILE_LEVEL = 'INFO'

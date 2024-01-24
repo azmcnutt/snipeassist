@@ -3,7 +3,6 @@
 import sys
 import logging
 import logging.config
-import pprint
 
 from PySide6.QtWidgets import QApplication
 
@@ -17,7 +16,9 @@ def main():
     #let's setup logging
     logging.config.dictConfig(settings.LOGGING_CONFIG)
     logger = logging.getLogger('snipescan')
-    logger.info('Snipe scan starting')
+    logger.info('***************************************')
+    logger.info('          Snipe scan starting')
+    logger.info('***************************************')
     logger.debug('Snipe URL: %s', settings.SNIPE_URL)
 
     # Test connectivity to the Snipe server.  For a properly configured
