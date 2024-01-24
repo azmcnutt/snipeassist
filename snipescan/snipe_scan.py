@@ -9,7 +9,6 @@ from PySide6.QtWidgets import QApplication
 
 import settings
 from ui import Window
-from snipeapi import SnipeGet
 
 
 def main():
