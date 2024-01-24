@@ -165,6 +165,7 @@ cython_debug/
 
 # Settings file
 snipescan/settings.py
+snipescan.json
 
 # Log files
 snipescan.log.*

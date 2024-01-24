@@ -27,6 +27,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.config = ConfigManager(filename="snipescan.json")
         self.config.add_handler('lineEditAssetName', self.lineEditAssetName)
         self.config.add_handler('lineEditPurchaseDate', self.lineEditPurchaseDate)
+        self._load_purchase_date()
 
         # set up form defaults
         self.checkBoxScanAssetTag.setChecked(True)
@@ -53,7 +54,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def connectSignalsSlots(self):
         self.action_Exit.triggered.connect(self.close)
         self.action_Save.triggered.connect(self.save_settings)
-        self.dateEditPurchaseDate.dateChanged.connect(self._save_date)
+        self.dateEditPurchaseDate.dateChanged.connect(self._save_purchase_date)
         self.comboBoxCompany.currentIndexChanged[int].connect(self.company_index_changed)
         self.comboBoxModel.currentIndexChanged[int].connect(self.model_index_changed)
         self.comboBoxLocation.currentIndexChanged[int].connect(self.location_index_changed)
@@ -228,8 +229,10 @@ class Window(QMainWindow, Ui_MainWindow):
                 if settings.SAVE_ON_EXIT:
                     self.save_settings()
     
-    def _save_date(self):
-        self.lineEditPurchaseDate.setText(QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyyMd'))
+    def _save_purchase_date(self):
+        self.logger.debug('Updating Config.PurchaseDate from Form.PurchaseDate')
+        self.lineEditPurchaseDate.setText(QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyyMMdd'))
     
-    def _load_date(self):
-        self.dateEditPurchaseDate.setDate(QtCore.QDate.fromString(self.lineEditPurchaseDate.text(), 'yyyyMd'))
+    def _load_purchase_date(self):
+        self.logger.debug('Updating Form.PurchaseDate from Config.PurchaseDate')
+        self.dateEditPurchaseDate.setDate(QtCore.QDate.fromString(self.lineEditPurchaseDate.text(), 'yyyyMMdd'))
