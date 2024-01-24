@@ -1,17 +1,25 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'snipescanwwKmbP.ui'
+## Form generated from reading UI file 'snipescanQJGRTz.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.4.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
+    QCursor, QFont, QFontDatabase, QGradient,
+    QIcon, QImage, QKeySequence, QLinearGradient,
+    QPainter, QPalette, QPixmap, QRadialGradient,
+    QTransform)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateEdit,
+    QGroupBox, QLabel, QLineEdit, QMainWindow,
+    QMenu, QMenuBar, QPushButton, QRadioButton,
+    QSizePolicy, QStatusBar, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -297,7 +305,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 850, 21))
+        self.menubar.setGeometry(QRect(0, 0, 850, 22))
         self.menu_File = QMenu(self.menubar)
         self.menu_File.setObjectName(u"menu_File")
         MainWindow.setMenuBar(self.menubar)
