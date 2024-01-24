@@ -1151,6 +1151,9 @@ Scanning</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEditScanning">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>10</x>
