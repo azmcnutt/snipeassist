@@ -21,13 +21,6 @@ SAVE_ON_EXIT = True
 # Ask before quit
 ASK_BEFORE_QUIT = True
 
-# Default values for the scanning form
-DEFAULT_STATUS = 'Ready to Deploy'
-# DEFAULT_COMPANY = ''
-# DEFUALT_MODEL = ''
-# DEFAULT_LOCATION = ''
-# DEFAULT_SUPPLIER = ''
-
 # Logging configuration
 LOG_LEVEL = 'DEBUG'
 LOG_FILE_LEVEL = 'INFO'

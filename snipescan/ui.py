@@ -1,20 +1,30 @@
 import sys
 import logging
 
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QApplication
 from PySide6 import QtGui, QtCore, QtWidgets
 from pyqtconfig import ConfigManager, HOOKS
 
 from ui_snipescan import Ui_MainWindow
+from ui_loading import Ui_Dialog
 from snipeapi import SnipeGet
 import settings
 from pprint import pprint
+
+class LoadingWindow(QMainWindow, Ui_Dialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+
 
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.connectSignalsSlots()
+        loading = LoadingWindow()
+        loading.show()
+        QApplication.processEvents()
 
         logging.config.dictConfig(settings.LOGGING_CONFIG)
         self.logger = logging.getLogger(__name__)
@@ -23,15 +33,42 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lineEditPurchaseDate = QtWidgets.QLineEdit()
         self.lineEditPurchaseDate.setText(QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyyMd'))
 
+        # setup another hack text box so I can save the check out to radio button
+        self.lineEditCheckOutType = QtWidgets.QLineEdit()
+
+
         # Setup object to load and save form settings
         self.config = ConfigManager(filename="snipescan.json")
+        self.config.add_handler('comboBoxCompany', self.comboBoxCompany)
+        self.config.add_handler('comboBoxModel', self.comboBoxModel)
+        self.config.add_handler('comboBoxLocation', self.comboBoxLocation)
+        self.config.add_handler('comboBoxStatus', self.comboBoxStatus)
+        self.config.add_handler('comboBoxSupplier', self.comboBoxSupplier)
+        self.config.add_handler('checkBoxAssetName', self.checkBoxAssetName)
+        self.config.add_handler('checkBoxPurchaseDate', self.checkBoxPurchaseDate)
+        self.config.add_handler('checkBoxOrderNumber', self.checkBoxOrderNumber)
+        self.config.add_handler('checkBoxPurchaseCost', self.checkBoxPurchaseCost)
+        self.config.add_handler('checkBoxWarranty', self.checkBoxWarranty)
+        self.config.add_handler('checkBoxNotes', self.checkBoxNotes)
         self.config.add_handler('lineEditAssetName', self.lineEditAssetName)
+        self.config.add_handler('checkBoxAppend', self.checkBoxAppend)
+        self.config.add_handler('lineEditAssetNameAppend', self.lineEditAssetNameAppend)
         self.config.add_handler('lineEditPurchaseDate', self.lineEditPurchaseDate)
         self._load_purchase_date()
+        self.config.add_handler('lineEditOrderNumber', self.lineEditOrderNumber)
+        self.config.add_handler('lineEditPurchaseCost', self.lineEditPurchaseCost)
+        self.config.add_handler('lineEditWarranty', self.lineEditWarranty)
+        self.config.add_handler('lineEditNotes', self.lineEditNotes)
+        self.config.add_handler('checkBoxScanAssetTag', self.checkBoxScanAssetTag)
+        self.config.add_handler('checkBoxScanSerial', self.checkBoxScanSerial)
+        self.config.add_handler('checkBoxCheckOutEnabled', self.checkBoxCheckOutEnabled)
+        # self.config.add_handler('radioButtonCheckoutUser', self.radioButtonCheckoutUser)
+        # self.config.add_handler('radioButtonCheckoutAsset', self.radioButtonCheckoutAsset)
+        # self.config.add_handler('radioButtonCheckoutLocation', self.radioButtonCheckoutLocation)
+        self.config.add_handler('lineEditCheckOutType', self.lineEditCheckOutType)
+        self.config.add_handler('comboBoxCheckoutTo', self.comboBoxCheckoutTo)
 
         # set up form defaults
-        self.checkBoxScanAssetTag.setChecked(True)
-        self.checkBoxScanSerial.setChecked(True)
         self.labelScanning.setText('')
         self.lineEditScanning.setReadOnly(True)
         self.pushButtonNext.setEnabled(False)
@@ -50,6 +87,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.refresh_comboboxes()
         self.set_defaults()
+        loading.close()
     
     def connectSignalsSlots(self):
         self.action_Exit.triggered.connect(self.close)
@@ -140,29 +178,24 @@ class Window(QMainWindow, Ui_MainWindow):
         self.logger.info('Finished refreshing the supplier combobox model')
     
     def set_defaults(self):
-        self.logger.info('Setting ComboBoxes to setting defaults')
-        if hasattr(settings, 'DEFAULT_COMPANY'):
-            self.logger.debug('Found Default Company: %s', settings.DEFAULT_COMPANY)
-            self.comboBoxCompany.setCurrentText(settings.DEFAULT_COMPANY)
-        if hasattr(settings, 'DEFAULT_MODEL'):
-            self.logger.debug('Found Default Model: %s', settings.DEFAULT_MODEL)
-            self.comboBoxModel.setCurrentText(settings.DEFAULT_MODEL)
-        if hasattr(settings, 'DEFAULT_LOCATION'):
-            self.logger.debug('Found Default Location: %s', settings.DEFAULT_LOCATION)
-            self.comboBoxLocation.setCurrentText(settings.DEFAULT_LOCATION)
-        if hasattr(settings, 'DEFAULT_STATUS'):
-            self.logger.debug('Found Default Status: %s', settings.DEFAULT_STATUS)
-            self.comboBoxStatus.setCurrentText(settings.DEFAULT_STATUS)
-        if hasattr(settings, 'DEFAULT_SUPPLIER'):
-            self.logger.debug('Found Default Supplier: %s', settings.DEFAULT_SUPPLIER)
-            self.comboBoxSupplier.setCurrentText(settings.DEFAULT_SUPPLIER)
-        self.logger.info('Finished setting ComboBoxes to setting defaults')
         self.logger.info('Load settings from config file')
         self.config.load()
+        if self.lineEditCheckOutType.text() == 'user':
+            self.radioButtonCheckoutUser.setChecked(True)
+        elif self.lineEditCheckOutType.text() == 'asset':
+            self.radioButtonCheckoutAsset.setChecked(True)
+        elif self.lineEditCheckOutType.text() == 'location':
+            self.radioButtonCheckoutLocation.setChecked(True)
         self.logger.info('Loading settings completed')
     
     def save_settings(self):
         self.logger.info('Save settings to config file')
+        if self.radioButtonCheckoutUser.isChecked():
+            self.lineEditCheckOutType.setText('user')
+        elif self.radioButtonCheckoutAsset.isChecked():
+            self.lineEditCheckOutType.setText('asset')
+        elif self.radioButtonCheckoutLocation.isChecked():
+            self.lineEditCheckOutType.setText('location')
         self.config.save()
         self.logger.info('Save settings completed')
     
