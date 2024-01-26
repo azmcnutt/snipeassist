@@ -212,6 +212,16 @@ class Window(QMainWindow, Ui_MainWindow):
         _id = indx.data()
         name = indx.text()
         self.logger.debug('ComboboxModel Updated: ID: %s, Name: %s',_id, name)
+        model = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'models').get_by_id(_id)
+        if model['fieldset']:
+            self.logger.debug('Fieldset id: %s', model['fieldset']['id'])
+            fieldset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'fieldsets').get_by_id(model['fieldset']['id'])
+            self.logger.debug('Fieldset ID: %s - %s', fieldset['id'], fieldset['name'])
+            for f in fieldset['fields']['rows']:
+                self.logger.debug('id: %s - name: %s - db_column: %s', f['id'], f['name'], f['db_column_name'])
+                self.logger.debug('Choices: %s', f['field_values_array'])
+
+
     
     @QtCore.Slot(int)
     def location_index_changed(self, row):
