@@ -36,6 +36,12 @@ class Window(QMainWindow, Ui_MainWindow):
         # setup another hack text box so I can save the check out to radio button
         self.lineEditCheckOutType = QtWidgets.QLineEdit()
 
+        # on form load, remove all tabs from the tab screen for custom fields
+        self.tabWidgetCustomFields.clear()
+
+        # create a dictionary to hold custom widgets
+        self.custom_fields = {}
+
 
         # Setup object to load and save form settings
         self.config = ConfigManager(filename="snipescan.json")
@@ -208,6 +214,8 @@ class Window(QMainWindow, Ui_MainWindow):
     
     @QtCore.Slot(int)
     def model_index_changed(self, row):
+        self.custom_fields = {}  # clear custom fields
+        self.tabWidgetCustomFields.clear()
         indx = self.model_model.item(row)
         _id = indx.data()
         name = indx.text()
@@ -218,6 +226,23 @@ class Window(QMainWindow, Ui_MainWindow):
             fieldset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'fieldsets').get_by_id(model['fieldset']['id'])
             self.logger.debug('Fieldset ID: %s - %s', fieldset['id'], fieldset['name'])
             for f in fieldset['fields']['rows']:
+                tab = QtWidgets.QWidget()
+                fieldset_tab_id = self.tabWidgetCustomFields.addTab(tab, f['name'])
+                self.custom_fields[fieldset_tab_id] = {}
+                self.custom_fields[fieldset_tab_id]['label'] = QtWidgets.QLabel(f['db_column_name'], tab)
+                self.custom_fields[fieldset_tab_id]['label'].setGeometry(QtCore.QRect(0, 0, 300, 16))
+                self.custom_fields[fieldset_tab_id]['scan'] = QtWidgets.QCheckBox(tab)
+                self.custom_fields[fieldset_tab_id]['scan'].setText(f"Scan {f['name']}")
+                self.custom_fields[fieldset_tab_id]['scan'].setGeometry(QtCore.QRect(0, 20, 300, 22))
+                self.config.add_handler(f['db_column_name']+'_scan', self.custom_fields[fieldset_tab_id]['scan'])
+                self.custom_fields[fieldset_tab_id]['fill'] = QtWidgets.QCheckBox(tab)
+                self.custom_fields[fieldset_tab_id]['fill'].setText(f"Fill {f['name']}")
+                self.custom_fields[fieldset_tab_id]['fill'].setGeometry(QtCore.QRect(0, 40, 300, 22))
+                self.config.add_handler(f['db_column_name']+'_fill', self.custom_fields[fieldset_tab_id]['fill'])
+                self.custom_fields[fieldset_tab_id]['data'] = QtWidgets.QLineEdit(tab)
+                self.custom_fields[fieldset_tab_id]['data'].setGeometry(QtCore.QRect(0, 60, 300, 22))
+                self.config.add_handler(f['db_column_name'] + '_data', self.custom_fields[fieldset_tab_id]['data'])
+
                 self.logger.debug('id: %s - name: %s - db_column: %s', f['id'], f['name'], f['db_column_name'])
                 self.logger.debug('Choices: %s', f['field_values_array'])
 
