@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'snipescanPheWxl.ui'
+## Form generated from reading UI file 'snipescanryJWTp.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.3
 ##
@@ -19,7 +19,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateEdit,
     QGroupBox, QLabel, QLineEdit, QMainWindow,
     QMenu, QMenuBar, QPushButton, QRadioButton,
-    QSizePolicy, QStatusBar, QWidget)
+    QSizePolicy, QStatusBar, QTabWidget, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -273,6 +273,15 @@ class Ui_MainWindow(object):
         self.groupBoxCustom = QGroupBox(self.centralwidget)
         self.groupBoxCustom.setObjectName(u"groupBoxCustom")
         self.groupBoxCustom.setGeometry(QRect(10, 310, 831, 161))
+        self.tabWidgetCustomFields = QTabWidget(self.groupBoxCustom)
+        self.tabWidgetCustomFields.setObjectName(u"tabWidgetCustomFields")
+        self.tabWidgetCustomFields.setGeometry(QRect(0, 20, 821, 141))
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.tabWidgetCustomFields.addTab(self.tab, "")
+        self.tab_2 = QWidget()
+        self.tab_2.setObjectName(u"tab_2")
+        self.tabWidgetCustomFields.addTab(self.tab_2, "")
         self.pushButtonRefresh = QPushButton(self.centralwidget)
         self.pushButtonRefresh.setObjectName(u"pushButtonRefresh")
         self.pushButtonRefresh.setGeometry(QRect(670, 80, 75, 46))
@@ -319,6 +328,9 @@ class Ui_MainWindow(object):
         self.menu_File.addAction(self.action_Exit)
 
         self.retranslateUi(MainWindow)
+
+        self.tabWidgetCustomFields.setCurrentIndex(0)
+
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -377,6 +389,8 @@ class Ui_MainWindow(object):
         self.radioButtonCheckoutAsset.setText(QCoreApplication.translate("MainWindow", u"Asset", None))
         self.radioButtonCheckoutLocation.setText(QCoreApplication.translate("MainWindow", u"Location", None))
         self.groupBoxCustom.setTitle(QCoreApplication.translate("MainWindow", u"CustomFields", None))
+        self.tabWidgetCustomFields.setTabText(self.tabWidgetCustomFields.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Tab 1", None))
+        self.tabWidgetCustomFields.setTabText(self.tabWidgetCustomFields.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
         self.pushButtonRefresh.setText(QCoreApplication.translate("MainWindow", u"Refresh Req\n"
 "Items", None))
         self.pushButtonScan.setText(QCoreApplication.translate("MainWindow", u"Start\n"
