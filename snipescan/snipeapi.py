@@ -56,6 +56,18 @@ class SnipeGet:
             return ret
         except:
             return None
+
+    def get_by_id(self, id):
+        try:
+            response = requests.get(self._snipe_url + self._endpoint + '/' +str(id), headers=self._headers)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return None
+        except Exception as e:
+            self.logger.warn(e)
+            return None
+
     
     def count(self):
         try:
