@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'snipescanryJWTp.ui'
+## Form generated from reading UI file 'snipescanSZhGxa.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.3
 ##
@@ -18,8 +18,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateEdit,
     QGroupBox, QLabel, QLineEdit, QMainWindow,
-    QMenu, QMenuBar, QPushButton, QRadioButton,
-    QSizePolicy, QStatusBar, QTabWidget, QWidget)
+    QMenu, QMenuBar, QPushButton, QSizePolicy,
+    QStatusBar, QTabWidget, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -226,7 +226,7 @@ class Ui_MainWindow(object):
         self.labelNameError_7.setPalette(palette6)
         self.label = QLabel(self.groupBoxStatic)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(20, 218, 229, 13))
+        self.label.setGeometry(QRect(20, 218, 281, 16))
         self.groupBoxScanable = QGroupBox(self.centralwidget)
         self.groupBoxScanable.setObjectName(u"groupBoxScanable")
         self.groupBoxScanable.setGeometry(QRect(490, 70, 121, 101))
@@ -254,22 +254,19 @@ class Ui_MainWindow(object):
         self.labelAssetTag.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.groupBoxCheckout = QGroupBox(self.centralwidget)
         self.groupBoxCheckout.setObjectName(u"groupBoxCheckout")
-        self.groupBoxCheckout.setGeometry(QRect(490, 170, 351, 141))
+        self.groupBoxCheckout.setGeometry(QRect(490, 170, 351, 101))
         self.checkBoxCheckOutEnabled = QCheckBox(self.groupBoxCheckout)
         self.checkBoxCheckOutEnabled.setObjectName(u"checkBoxCheckOutEnabled")
         self.checkBoxCheckOutEnabled.setGeometry(QRect(10, 20, 120, 20))
-        self.radioButtonCheckoutUser = QRadioButton(self.groupBoxCheckout)
-        self.radioButtonCheckoutUser.setObjectName(u"radioButtonCheckoutUser")
-        self.radioButtonCheckoutUser.setGeometry(QRect(10, 40, 82, 17))
-        self.radioButtonCheckoutAsset = QRadioButton(self.groupBoxCheckout)
-        self.radioButtonCheckoutAsset.setObjectName(u"radioButtonCheckoutAsset")
-        self.radioButtonCheckoutAsset.setGeometry(QRect(10, 60, 82, 17))
-        self.radioButtonCheckoutLocation = QRadioButton(self.groupBoxCheckout)
-        self.radioButtonCheckoutLocation.setObjectName(u"radioButtonCheckoutLocation")
-        self.radioButtonCheckoutLocation.setGeometry(QRect(10, 80, 82, 17))
         self.comboBoxCheckoutTo = QComboBox(self.groupBoxCheckout)
         self.comboBoxCheckoutTo.setObjectName(u"comboBoxCheckoutTo")
-        self.comboBoxCheckoutTo.setGeometry(QRect(10, 100, 331, 22))
+        self.comboBoxCheckoutTo.setGeometry(QRect(10, 70, 331, 22))
+        self.comboBoxCheckOutType = QComboBox(self.groupBoxCheckout)
+        self.comboBoxCheckOutType.addItem("")
+        self.comboBoxCheckOutType.addItem("")
+        self.comboBoxCheckOutType.addItem("")
+        self.comboBoxCheckOutType.setObjectName(u"comboBoxCheckOutType")
+        self.comboBoxCheckOutType.setGeometry(QRect(10, 40, 69, 22))
         self.groupBoxCustom = QGroupBox(self.centralwidget)
         self.groupBoxCustom.setObjectName(u"groupBoxCustom")
         self.groupBoxCustom.setGeometry(QRect(10, 310, 831, 161))
@@ -385,9 +382,11 @@ class Ui_MainWindow(object):
         self.labelAssetTag.setText(QCoreApplication.translate("MainWindow", u"Asset Tag: ", None))
         self.groupBoxCheckout.setTitle(QCoreApplication.translate("MainWindow", u"Check Out", None))
         self.checkBoxCheckOutEnabled.setText(QCoreApplication.translate("MainWindow", u"Enable Check Out:", None))
-        self.radioButtonCheckoutUser.setText(QCoreApplication.translate("MainWindow", u"User", None))
-        self.radioButtonCheckoutAsset.setText(QCoreApplication.translate("MainWindow", u"Asset", None))
-        self.radioButtonCheckoutLocation.setText(QCoreApplication.translate("MainWindow", u"Location", None))
+        self.comboBoxCheckOutType.setItemText(0, QCoreApplication.translate("MainWindow", u"User", None))
+        self.comboBoxCheckOutType.setItemText(1, QCoreApplication.translate("MainWindow", u"Asset", None))
+        self.comboBoxCheckOutType.setItemText(2, QCoreApplication.translate("MainWindow", u"Location", None))
+
+        self.comboBoxCheckOutType.setCurrentText(QCoreApplication.translate("MainWindow", u"User", None))
         self.groupBoxCustom.setTitle(QCoreApplication.translate("MainWindow", u"CustomFields", None))
         self.tabWidgetCustomFields.setTabText(self.tabWidgetCustomFields.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Tab 1", None))
         self.tabWidgetCustomFields.setTabText(self.tabWidgetCustomFields.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))

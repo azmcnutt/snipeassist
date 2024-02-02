@@ -892,8 +892,8 @@
       <rect>
        <x>20</x>
        <y>218</y>
-       <width>229</width>
-       <height>13</height>
+       <width>281</width>
+       <height>16</height>
       </rect>
      </property>
      <property name="text">
@@ -1010,7 +1010,7 @@
       <x>490</x>
       <y>170</y>
       <width>351</width>
-      <height>141</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="title">
@@ -1029,54 +1029,43 @@
       <string>Enable Check Out:</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="radioButtonCheckoutUser">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>82</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>User</string>
-     </property>
-    </widget>
-    <widget class="QRadioButton" name="radioButtonCheckoutAsset">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>60</y>
-       <width>82</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Asset</string>
-     </property>
-    </widget>
-    <widget class="QRadioButton" name="radioButtonCheckoutLocation">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>80</y>
-       <width>82</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Location</string>
-     </property>
-    </widget>
     <widget class="QComboBox" name="comboBoxCheckoutTo">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>100</y>
+       <y>70</y>
        <width>331</width>
        <height>22</height>
       </rect>
      </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxCheckOutType">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>69</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="currentText">
+      <string>User</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>User</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Asset</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Location</string>
+      </property>
+     </item>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBoxCustom">

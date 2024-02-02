@@ -1,15 +1,18 @@
 import sys
 import logging
+import logging.config
 
 from PySide6.QtWidgets import QMainWindow, QApplication
 from PySide6 import QtGui, QtCore, QtWidgets
-from pyqtconfig import ConfigManager, HOOKS
+
+from pyqtconfig import ConfigManager
 
 from ui_snipescan import Ui_MainWindow
 from ui_loading import Ui_Dialog
 from snipeapi import SnipeGet
 import settings
-from pprint import pprint
+# from pprint import pprint
+
 
 class LoadingWindow(QMainWindow, Ui_Dialog):
     def __init__(self, parent=None):
@@ -21,7 +24,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.connectSignalsSlots()
+        self.connect_signals_slots()
         loading = LoadingWindow()
         loading.show()
         QApplication.processEvents()
@@ -33,15 +36,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lineEditPurchaseDate = QtWidgets.QLineEdit()
         self.lineEditPurchaseDate.setText(QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyyMd'))
 
-        # setup another hack text box so I can save the check out to radio button
-        self.lineEditCheckOutType = QtWidgets.QLineEdit()
-
         # on form load, remove all tabs from the tab screen for custom fields
         self.tabWidgetCustomFields.clear()
 
         # create a dictionary to hold custom widgets
         self.custom_fields = {}
-
 
         # Setup object to load and save form settings
         self.config = ConfigManager(filename="snipescan.json")
@@ -68,10 +67,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.config.add_handler('checkBoxScanAssetTag', self.checkBoxScanAssetTag)
         self.config.add_handler('checkBoxScanSerial', self.checkBoxScanSerial)
         self.config.add_handler('checkBoxCheckOutEnabled', self.checkBoxCheckOutEnabled)
-        # self.config.add_handler('radioButtonCheckoutUser', self.radioButtonCheckoutUser)
-        # self.config.add_handler('radioButtonCheckoutAsset', self.radioButtonCheckoutAsset)
-        # self.config.add_handler('radioButtonCheckoutLocation', self.radioButtonCheckoutLocation)
-        self.config.add_handler('lineEditCheckOutType', self.lineEditCheckOutType)
+        self.config.add_handler('comboBoxEditCheckOutType', self.comboBoxCheckOutType)
         self.config.add_handler('comboBoxCheckoutTo', self.comboBoxCheckoutTo)
 
         # set up form defaults
@@ -95,7 +91,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_defaults()
         loading.close()
     
-    def connectSignalsSlots(self):
+    def connect_signals_slots(self):
         self.action_Exit.triggered.connect(self.close)
         self.action_Save.triggered.connect(self.save_settings)
         self.dateEditPurchaseDate.dateChanged.connect(self._save_purchase_date)
@@ -186,22 +182,10 @@ class Window(QMainWindow, Ui_MainWindow):
     def set_defaults(self):
         self.logger.info('Load settings from config file')
         self.config.load()
-        if self.lineEditCheckOutType.text() == 'user':
-            self.radioButtonCheckoutUser.setChecked(True)
-        elif self.lineEditCheckOutType.text() == 'asset':
-            self.radioButtonCheckoutAsset.setChecked(True)
-        elif self.lineEditCheckOutType.text() == 'location':
-            self.radioButtonCheckoutLocation.setChecked(True)
         self.logger.info('Loading settings completed')
     
     def save_settings(self):
         self.logger.info('Save settings to config file')
-        if self.radioButtonCheckoutUser.isChecked():
-            self.lineEditCheckOutType.setText('user')
-        elif self.radioButtonCheckoutAsset.isChecked():
-            self.lineEditCheckOutType.setText('asset')
-        elif self.radioButtonCheckoutLocation.isChecked():
-            self.lineEditCheckOutType.setText('location')
         self.config.save()
         self.logger.info('Save settings completed')
     
@@ -210,16 +194,21 @@ class Window(QMainWindow, Ui_MainWindow):
         indx = self.company_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxCompany Updated: ID: %s, Name: %s',_id, name)
+        self.logger.debug('ComboboxCompany Updated: ID: %s, Name: %s', _id, name)
     
     @QtCore.Slot(int)
     def model_index_changed(self, row):
-        self.custom_fields = {}  # clear custom fields
+        for v in self.custom_fields.values():
+            field_name = v['label'].text()
+            self.config.remove_handler(field_name + '_scan')
+            self.config.remove_handler(field_name + '_data')
+        self.custom_fields.clear()
         self.tabWidgetCustomFields.clear()
+        self.logger.debug(self.tabWidgetCustomFields.count())
         indx = self.model_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxModel Updated: ID: %s, Name: %s',_id, name)
+        self.logger.debug('ComboboxModel Updated: ID: %s, Name: %s', _id, name)
         model = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'models').get_by_id(_id)
         if model['fieldset']:
             self.logger.debug('Fieldset id: %s', model['fieldset']['id'])
@@ -231,43 +220,51 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.custom_fields[fieldset_tab_id] = {}
                 self.custom_fields[fieldset_tab_id]['label'] = QtWidgets.QLabel(f['db_column_name'], tab)
                 self.custom_fields[fieldset_tab_id]['label'].setGeometry(QtCore.QRect(0, 0, 300, 16))
-                self.custom_fields[fieldset_tab_id]['scan'] = QtWidgets.QCheckBox(tab)
-                self.custom_fields[fieldset_tab_id]['scan'].setText(f"Scan {f['name']}")
-                self.custom_fields[fieldset_tab_id]['scan'].setGeometry(QtCore.QRect(0, 20, 300, 22))
+                self.custom_fields[fieldset_tab_id]['label'].setVisible(True)
+                self.custom_fields[fieldset_tab_id]['scan'] = QtWidgets.QComboBox(tab)
+                self.custom_fields[fieldset_tab_id]['scan'].addItems(['Do not record', 'Fill', 'Scan'])
+                self.custom_fields[fieldset_tab_id]['scan'].setGeometry(QtCore.QRect(0, 25, 300, 22))
+                self.custom_fields[fieldset_tab_id]['scan'].setVisible(True)
                 self.config.add_handler(f['db_column_name']+'_scan', self.custom_fields[fieldset_tab_id]['scan'])
-                self.custom_fields[fieldset_tab_id]['fill'] = QtWidgets.QCheckBox(tab)
-                self.custom_fields[fieldset_tab_id]['fill'].setText(f"Fill {f['name']}")
-                self.custom_fields[fieldset_tab_id]['fill'].setGeometry(QtCore.QRect(0, 40, 300, 22))
-                self.config.add_handler(f['db_column_name']+'_fill', self.custom_fields[fieldset_tab_id]['fill'])
-                self.custom_fields[fieldset_tab_id]['data'] = QtWidgets.QLineEdit(tab)
-                self.custom_fields[fieldset_tab_id]['data'].setGeometry(QtCore.QRect(0, 60, 300, 22))
+                if f['field_values_array']:
+                    self.custom_fields[fieldset_tab_id]['data'] = QtWidgets.QComboBox(tab)
+                    self.custom_fields[fieldset_tab_id]['data'].addItems(f['field_values_array'])
+                else:
+                    self.custom_fields[fieldset_tab_id]['data'] = QtWidgets.QLineEdit(tab)
+                self.custom_fields[fieldset_tab_id]['data'].setGeometry(QtCore.QRect(0, 50, 300, 22))
+                self.custom_fields[fieldset_tab_id]['data'].setVisible(True)
                 self.config.add_handler(f['db_column_name'] + '_data', self.custom_fields[fieldset_tab_id]['data'])
 
                 self.logger.debug('id: %s - name: %s - db_column: %s', f['id'], f['name'], f['db_column_name'])
                 self.logger.debug('Choices: %s', f['field_values_array'])
 
+    @QtCore.Slot(int)
+    def custom_scan_index_changed(self, indx):
+        self.logger.debug(indx)
+        # _id = indx.data()
+        # name = indx.text()
+        # self.logger.debug('ComboboxLocation Updated: ID: %s, Name: %s', _id, name)
 
-    
     @QtCore.Slot(int)
     def location_index_changed(self, row):
         indx = self.location_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxLocation Updated: ID: %s, Name: %s',_id, name)
+        self.logger.debug('ComboboxLocation Updated: ID: %s, Name: %s', _id, name)
     
     @QtCore.Slot(int)
     def status_index_changed(self, row):
         indx = self.status_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxStatus Updated: ID: %s, Name: %s',_id, name)
+        self.logger.debug('ComboboxStatus Updated: ID: %s, Name: %s', _id, name)
     
     @QtCore.Slot(int)
     def supplier_index_changed(self, row):
         indx = self.supplier_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxSupplier Updated: ID: %s, Name: %s',_id, name)
+        self.logger.debug('ComboboxSupplier Updated: ID: %s, Name: %s', _id, name)
     
     def closeEvent(self,event):
         self.logger.info('Main window closing')
