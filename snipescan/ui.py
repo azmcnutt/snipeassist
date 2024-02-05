@@ -100,6 +100,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.comboBoxLocation.currentIndexChanged[int].connect(self.location_index_changed)
         self.comboBoxStatus.currentIndexChanged[int].connect(self.status_index_changed)
         self.comboBoxSupplier.currentIndexChanged[int].connect(self.supplier_index_changed)
+        self.checkBoxAssetName.stateChanged.connect(self._verify_asset_name())
     
     def refresh_comboboxes(self):
         """ Downloads information from SnipeIT API to populate the combo boxes """
@@ -301,3 +302,27 @@ class Window(QMainWindow, Ui_MainWindow):
     def _load_purchase_date(self):
         self.logger.debug('Updating Form.PurchaseDate from Config.PurchaseDate')
         self.dateEditPurchaseDate.setDate(QtCore.QDate.fromString(self.lineEditPurchaseDate.text(), 'yyyyMMdd'))
+
+    def _verify_asset_name(self):
+        self.logger.debug('Verifying Asset Name')
+        if not self.checkBoxAssetName.isChecked():
+            # we are not filling Asset name or appending
+            # clear any error and disable the text boxes
+            self.logger.debug('Asset Fill not checked.  Disabled entries')
+            self.labelNameError.setVisible(False)
+            self.lineEditAssetName.setReadOnly(True)
+            self.lineEditAssetNameAppend.setReadOnly(True)
+            self.checkBoxAppend.setEnabled(True)
+        elif self.checkBoxAssetName.isChecked():
+            self.logger.debug('Asset Fill checked.  Enable entries')
+            self.lineEditAssetName.setReadOnly(False)
+            self.checkBoxAppend.setEnabled(False)
+            if self.checkBoxAppend.isChecked():
+                self.logger.debug('Append checked.')
+                self.lineEditAssetNameAppend.setReadOnly(False)
+            else:
+                self.logger.debug('Append not checked.')
+                self.lineEditAssetNameAppend.setReadOnly(True)
+        self.logger.debug('Completed verifying Asset Name')
+
+
