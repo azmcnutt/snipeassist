@@ -14,6 +14,9 @@ import settings
 # from pprint import pprint
 
 
+logging.config.dictConfig(settings.LOGGING_CONFIG)
+logger = logging.getLogger(__name__)
+
 class LoadingWindow(QMainWindow, Ui_Dialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -29,8 +32,8 @@ class Window(QMainWindow, Ui_MainWindow):
         loading.show()
         QApplication.processEvents()
 
-        logging.config.dictConfig(settings.LOGGING_CONFIG)
-        self.logger = logging.getLogger(__name__)
+        # logging.config.dictConfig(settings.LOGGING_CONFIG)
+        # self.logger = logging.getLogger(__name__)
 
         # Set up a hack text box so I can save the Purchase Date
         self.lineEditPurchaseDate = QtWidgets.QLineEdit()
@@ -89,6 +92,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.refresh_comboboxes()
         self.set_defaults()
+
+        self._verify_static_items()
         loading.close()
     
     def connect_signals_slots(self):
@@ -100,49 +105,55 @@ class Window(QMainWindow, Ui_MainWindow):
         self.comboBoxLocation.currentIndexChanged[int].connect(self.location_index_changed)
         self.comboBoxStatus.currentIndexChanged[int].connect(self.status_index_changed)
         self.comboBoxSupplier.currentIndexChanged[int].connect(self.supplier_index_changed)
-        self.checkBoxAssetName.stateChanged.connect(self._verify_asset_name())
+        self.checkBoxAssetName.stateChanged.connect(self._verify_asset_name)
+        self.checkBoxAppend.stateChanged.connect(self._verify_asset_name)
+        self.checkBoxPurchaseDate.stateChanged.connect(self._verify_purchase_date)
+        self.checkBoxOrderNumber.stateChanged.connect(self._verify_order_number)
+        self.checkBoxPurchaseCost.stateChanged.connect(self._verify_purchase_cost)
+        self.checkBoxWarranty.stateChanged.connect(self._verify_warranty)
+        self.checkBoxNotes.stateChanged.connect(self._verify_notes)
     
     def refresh_comboboxes(self):
         """ Downloads information from SnipeIT API to populate the combo boxes """
 
-        self.logger.info('Starting Combobox Refresh')
+        logger.info('Starting Combobox Refresh')
         companies = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'companies').get_all()
         if not companies:
-            self.logger.critical('API Error, unable to get companies')
+            logger.critical('API Error, unable to get companies')
             sys.exit()
-        self.logger.debug('received %s companies.  Creating company combobox model', len(companies))
+        logger.debug('received %s companies.  Creating company combobox model', len(companies))
         self.company_model = QtGui.QStandardItemModel()
         for company in companies:
-            self.logger.debug('Adding id: %s for company: %s', company['id'], company['name'])
+            logger.debug('Adding id: %s for company: %s', company['id'], company['name'])
             c = QtGui.QStandardItem(company['name'])
             c.setData(company['id'])
             self.company_model.appendRow(c)
         self.company_model.sort(0, QtCore.Qt.AscendingOrder)
-        self.logger.debug('Setting company combobox model')
+        logger.debug('Setting company combobox model')
         self.comboBoxCompany.setModel(self.company_model)
-        self.logger.info('Finished refreshing the company combobox model')
+        logger.info('Finished refreshing the company combobox model')
         
         models = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'models').get_all()
         if not models:
-            self.logger.critical('API Error, unable to get models')
+            logger.critical('API Error, unable to get models')
             sys.exit()
-        self.logger.debug('received %s models.  Creating model combobox model', len(models))
+        logger.debug('received %s models.  Creating model combobox model', len(models))
         self.model_model = QtGui.QStandardItemModel()
         for model in models:
-            self.logger.debug('Adding id: %s for model: %s', model['id'], model['name'])
+            logger.debug('Adding id: %s for model: %s', model['id'], model['name'])
             m = QtGui.QStandardItem(model['name'])
             m.setData(model['id'])
             self.model_model.appendRow(m)
         self.model_model.sort(0, QtCore.Qt.AscendingOrder)
-        self.logger.debug('Setting model combobox model')
+        logger.debug('Setting model combobox model')
         self.comboBoxModel.setModel(self.model_model)
-        self.logger.info('Finished refreshing the model combobox model')
+        logger.info('Finished refreshing the model combobox model')
         
         locations = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'locations').get_all()
         if not locations:
-            self.logger.critical('API Error, unable to get locations')
+            logger.critical('API Error, unable to get locations')
             sys.exit()
-        self.logger.debug('received %s locations.  Creating location combobox model', len(locations))
+        logger.debug('received %s locations.  Creating location combobox model', len(locations))
         self.location_model = QtGui.QStandardItemModel()
         for location in locations:
             l = QtGui.QStandardItem(location['name'])
@@ -150,13 +161,13 @@ class Window(QMainWindow, Ui_MainWindow):
             self.location_model.appendRow(l)
         self.location_model.sort(0, QtCore.Qt.AscendingOrder)
         self.comboBoxLocation.setModel(self.location_model)
-        self.logger.info('Finished refreshing the location combobox model')
+        logger.info('Finished refreshing the location combobox model')
         
         statuses = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'statuslabels').get_all()
         if not statuses:
-            self.logger.critical('API Error, unable to get status labels')
+            logger.critical('API Error, unable to get status labels')
             sys.exit()
-        self.logger.debug('received %s status labels.  Creating status combobox model', len(statuses))
+        logger.debug('received %s status labels.  Creating status combobox model', len(statuses))
         self.status_model = QtGui.QStandardItemModel()
         for status in statuses:
             s = QtGui.QStandardItem(status['name'])
@@ -164,13 +175,13 @@ class Window(QMainWindow, Ui_MainWindow):
             self.status_model.appendRow(s)
         self.status_model.sort(0, QtCore.Qt.AscendingOrder)
         self.comboBoxStatus.setModel(self.status_model)
-        self.logger.info('Finished refreshing the status combobox model')
+        logger.info('Finished refreshing the status combobox model')
         
         suppliers = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'suppliers').get_all()
         if not suppliers:
-            self.logger.critical('API Error, unable to get suppliers')
+            logger.critical('API Error, unable to get suppliers')
             sys.exit()
-        self.logger.debug('received %s suppliers.  Creating supplier combobox model', len(suppliers))
+        logger.debug('received %s suppliers.  Creating supplier combobox model', len(suppliers))
         self.supplier_model = QtGui.QStandardItemModel()
         for supplier in suppliers:
             s = QtGui.QStandardItem(supplier['name'])
@@ -178,24 +189,24 @@ class Window(QMainWindow, Ui_MainWindow):
             self.supplier_model.appendRow(s)
         self.supplier_model.sort(0, QtCore.Qt.AscendingOrder)
         self.comboBoxSupplier.setModel(self.supplier_model)
-        self.logger.info('Finished refreshing the supplier combobox model')
+        logger.info('Finished refreshing the supplier combobox model')
     
     def set_defaults(self):
-        self.logger.info('Load settings from config file')
+        logger.info('Load settings from config file')
         self.config.load()
-        self.logger.info('Loading settings completed')
+        logger.info('Loading settings completed')
     
     def save_settings(self):
-        self.logger.info('Save settings to config file')
+        logger.info('Save settings to config file')
         self.config.save()
-        self.logger.info('Save settings completed')
+        logger.info('Save settings completed')
     
     @QtCore.Slot(int)
     def company_index_changed(self, row):
         indx = self.company_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxCompany Updated: ID: %s, Name: %s', _id, name)
+        logger.debug('ComboboxCompany Updated: ID: %s, Name: %s', _id, name)
     
     @QtCore.Slot(int)
     def model_index_changed(self, row):
@@ -205,16 +216,16 @@ class Window(QMainWindow, Ui_MainWindow):
             self.config.remove_handler(field_name + '_data')
         self.custom_fields.clear()
         self.tabWidgetCustomFields.clear()
-        self.logger.debug(self.tabWidgetCustomFields.count())
+        logger.debug(self.tabWidgetCustomFields.count())
         indx = self.model_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxModel Updated: ID: %s, Name: %s', _id, name)
+        logger.debug('ComboboxModel Updated: ID: %s, Name: %s', _id, name)
         model = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'models').get_by_id(_id)
         if model['fieldset']:
-            self.logger.debug('Fieldset id: %s', model['fieldset']['id'])
+            logger.debug('Fieldset id: %s', model['fieldset']['id'])
             fieldset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'fieldsets').get_by_id(model['fieldset']['id'])
-            self.logger.debug('Fieldset ID: %s - %s', fieldset['id'], fieldset['name'])
+            logger.debug('Fieldset ID: %s - %s', fieldset['id'], fieldset['name'])
             for f in fieldset['fields']['rows']:
                 tab = QtWidgets.QWidget()
                 fieldset_tab_id = self.tabWidgetCustomFields.addTab(tab, f['name'])
@@ -236,39 +247,39 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.custom_fields[fieldset_tab_id]['data'].setVisible(True)
                 self.config.add_handler(f['db_column_name'] + '_data', self.custom_fields[fieldset_tab_id]['data'])
 
-                self.logger.debug('id: %s - name: %s - db_column: %s', f['id'], f['name'], f['db_column_name'])
-                self.logger.debug('Choices: %s', f['field_values_array'])
+                logger.debug('id: %s - name: %s - db_column: %s', f['id'], f['name'], f['db_column_name'])
+                logger.debug('Choices: %s', f['field_values_array'])
 
     @QtCore.Slot(int)
     def custom_scan_index_changed(self, indx):
-        self.logger.debug(indx)
+        logger.debug(indx)
         # _id = indx.data()
         # name = indx.text()
-        # self.logger.debug('ComboboxLocation Updated: ID: %s, Name: %s', _id, name)
+        # logger.debug('ComboboxLocation Updated: ID: %s, Name: %s', _id, name)
 
     @QtCore.Slot(int)
     def location_index_changed(self, row):
         indx = self.location_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxLocation Updated: ID: %s, Name: %s', _id, name)
+        logger.debug('ComboboxLocation Updated: ID: %s, Name: %s', _id, name)
     
     @QtCore.Slot(int)
     def status_index_changed(self, row):
         indx = self.status_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxStatus Updated: ID: %s, Name: %s', _id, name)
+        logger.debug('ComboboxStatus Updated: ID: %s, Name: %s', _id, name)
     
     @QtCore.Slot(int)
     def supplier_index_changed(self, row):
         indx = self.supplier_model.item(row)
         _id = indx.data()
         name = indx.text()
-        self.logger.debug('ComboboxSupplier Updated: ID: %s, Name: %s', _id, name)
+        logger.debug('ComboboxSupplier Updated: ID: %s, Name: %s', _id, name)
     
     def closeEvent(self,event):
-        self.logger.info('Main window closing')
+        logger.info('Main window closing')
         if hasattr(settings, 'ASK_BEFORE_QUIT'):
             if settings.ASK_BEFORE_QUIT:
                 result = QtWidgets.QMessageBox.question(
@@ -279,13 +290,13 @@ class Window(QMainWindow, Ui_MainWindow):
                 )
                 event.ignore()
                 if result == QtWidgets.QMessageBox.Yes:
-                    self.logger.info('User Quit')
+                    logger.info('User Quit')
                     if hasattr(settings, 'SAVE_ON_EXIT'):
                         if settings.SAVE_ON_EXIT:
                             self.save_settings()
                     event.accept()
                 else:
-                    self.logger.info('User canceled quit')
+                    logger.info('User canceled quit')
             else:
                 if hasattr(settings, 'SAVE_ON_EXIT'):
                     if settings.SAVE_ON_EXIT:
@@ -296,33 +307,101 @@ class Window(QMainWindow, Ui_MainWindow):
                     self.save_settings()
     
     def _save_purchase_date(self):
-        self.logger.debug('Updating Config.PurchaseDate from Form.PurchaseDate')
+        logger.debug('Updating Config.PurchaseDate from Form.PurchaseDate')
         self.lineEditPurchaseDate.setText(QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyyMMdd'))
     
     def _load_purchase_date(self):
-        self.logger.debug('Updating Form.PurchaseDate from Config.PurchaseDate')
+        logger.debug('Updating Form.PurchaseDate from Config.PurchaseDate')
         self.dateEditPurchaseDate.setDate(QtCore.QDate.fromString(self.lineEditPurchaseDate.text(), 'yyyyMMdd'))
 
+    def _verify_static_items(self):
+        self._verify_asset_name()
+        self._verify_purchase_date()
+        self._verify_order_number()
+        self._verify_purchase_cost()
+        self._verify_warranty()
+        self._verify_notes()
+
+    def _verify_order_number(self):
+        logger.debug('Verifying order_number')
+        if not self.checkBoxOrderNumber.isChecked():
+            # we are not filling Asset name or appending
+            # clear any error and disable the text boxes
+            logger.debug('Order Number Fill not checked.  Disabled entries')
+            self.labelOrderNumberError.setVisible(False)
+            self.lineEditOrderNumber.setReadOnly(True)
+        if self.checkBoxOrderNumber.isChecked():
+            logger.debug('Order Number Fill is checked.  Enable entries')
+            self.lineEditOrderNumber.setReadOnly(False)
+
+    def _verify_purchase_cost(self):
+        logger.debug('Verifying purchase_cost')
+        if not self.checkBoxPurchaseCost.isChecked():
+            # we are not filling Asset name or appending
+            # clear any error and disable the text boxes
+            logger.debug('Purchase Cost Fill not checked.  Disabled entries')
+            self.labelPurchaseCostError.setVisible(False)
+            self.lineEditPurchaseCost.setReadOnly(True)
+        if self.checkBoxPurchaseCost.isChecked():
+            logger.debug('Purchase Cost Fill is checked.  Enable entries')
+            self.lineEditPurchaseCost.setReadOnly(False)
+
+    def _verify_warranty(self):
+        logger.debug('Verifying Warranty')
+        if not self.checkBoxWarranty.isChecked():
+            # we are not filling Asset name or appending
+            # clear any error and disable the text boxes
+            logger.debug('Warranty Fill not checked.  Disabled entries')
+            self.labelWarrantyError.setVisible(False)
+            self.lineEditWarranty.setReadOnly(True)
+        if self.checkBoxWarranty.isChecked():
+            logger.debug('Warranty Fill is checked.  Enable entries')
+            self.lineEditWarranty.setReadOnly(False)
+
+    def _verify_notes(self):
+        logger.debug('Verifying notes')
+        if not self.checkBoxNotes.isChecked():
+            # we are not filling Asset name or appending
+            # clear any error and disable the text boxes
+            logger.debug('Notes Fill not checked.  Disabled entries')
+            self.labelNotesError.setVisible(False)
+            self.lineEditNotes.setReadOnly(True)
+        if self.checkBoxNotes.isChecked():
+            logger.debug('Notes Fill is checked.  Enable entries')
+            self.lineEditNotes.setReadOnly(False)
+
+    def _verify_purchase_date(self):
+        logger.debug('Verifying Purchase Date')
+        if not self.checkBoxPurchaseDate.isChecked():
+            # we are not filling Asset name or appending
+            # clear any error and disable the text boxes
+            logger.debug('Purchase Date Fill not checked.  Disabled entries')
+            self.labelPurchaseDateError.setVisible(False)
+            self.dateEditPurchaseDate.setReadOnly(True)
+        if self.checkBoxPurchaseDate.isChecked():
+            logger.debug('Purchase Date Fill is checked.  Enable entries')
+            self.dateEditPurchaseDate.setReadOnly(False)
+
     def _verify_asset_name(self):
-        self.logger.debug('Verifying Asset Name')
+        logger.debug('Verifying Asset Name')
         if not self.checkBoxAssetName.isChecked():
             # we are not filling Asset name or appending
             # clear any error and disable the text boxes
-            self.logger.debug('Asset Fill not checked.  Disabled entries')
+            logger.debug('Asset Fill not checked.  Disabled entries')
             self.labelNameError.setVisible(False)
             self.lineEditAssetName.setReadOnly(True)
             self.lineEditAssetNameAppend.setReadOnly(True)
-            self.checkBoxAppend.setEnabled(True)
-        elif self.checkBoxAssetName.isChecked():
-            self.logger.debug('Asset Fill checked.  Enable entries')
-            self.lineEditAssetName.setReadOnly(False)
             self.checkBoxAppend.setEnabled(False)
+        elif self.checkBoxAssetName.isChecked():
+            logger.debug('Asset Fill checked.  Enable entries')
+            self.lineEditAssetName.setReadOnly(False)
+            self.checkBoxAppend.setEnabled(True)
             if self.checkBoxAppend.isChecked():
-                self.logger.debug('Append checked.')
+                logger.debug('Append checked.')
                 self.lineEditAssetNameAppend.setReadOnly(False)
             else:
-                self.logger.debug('Append not checked.')
+                logger.debug('Append not checked.')
                 self.lineEditAssetNameAppend.setReadOnly(True)
-        self.logger.debug('Completed verifying Asset Name')
+        logger.debug('Completed verifying Asset Name')
 
 
