@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'snipescanSZhGxa.ui'
+## Form generated from reading UI file 'snipescanqACBle.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.3
 ##
@@ -265,6 +265,7 @@ class Ui_MainWindow(object):
         self.comboBoxCheckOutType.addItem("")
         self.comboBoxCheckOutType.addItem("")
         self.comboBoxCheckOutType.addItem("")
+        self.comboBoxCheckOutType.addItem("")
         self.comboBoxCheckOutType.setObjectName(u"comboBoxCheckOutType")
         self.comboBoxCheckOutType.setGeometry(QRect(10, 40, 69, 22))
         self.groupBoxCustom = QGroupBox(self.centralwidget)
@@ -382,11 +383,11 @@ class Ui_MainWindow(object):
         self.labelAssetTag.setText(QCoreApplication.translate("MainWindow", u"Asset Tag: ", None))
         self.groupBoxCheckout.setTitle(QCoreApplication.translate("MainWindow", u"Check Out", None))
         self.checkBoxCheckOutEnabled.setText(QCoreApplication.translate("MainWindow", u"Enable Check Out:", None))
-        self.comboBoxCheckOutType.setItemText(0, QCoreApplication.translate("MainWindow", u"User", None))
-        self.comboBoxCheckOutType.setItemText(1, QCoreApplication.translate("MainWindow", u"Asset", None))
-        self.comboBoxCheckOutType.setItemText(2, QCoreApplication.translate("MainWindow", u"Location", None))
+        self.comboBoxCheckOutType.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
+        self.comboBoxCheckOutType.setItemText(1, QCoreApplication.translate("MainWindow", u"User", None))
+        self.comboBoxCheckOutType.setItemText(2, QCoreApplication.translate("MainWindow", u"Asset", None))
+        self.comboBoxCheckOutType.setItemText(3, QCoreApplication.translate("MainWindow", u"Location", None))
 
-        self.comboBoxCheckOutType.setCurrentText(QCoreApplication.translate("MainWindow", u"User", None))
         self.groupBoxCustom.setTitle(QCoreApplication.translate("MainWindow", u"CustomFields", None))
         self.tabWidgetCustomFields.setTabText(self.tabWidgetCustomFields.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Tab 1", None))
         self.tabWidgetCustomFields.setTabText(self.tabWidgetCustomFields.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))

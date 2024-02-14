@@ -91,7 +91,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.labelNotesError.setVisible(False)
 
         self.refresh_comboboxes()
-        self.set_defaults()
+
 
         self._verify_static_items()
         loading.close()
@@ -112,6 +112,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.checkBoxPurchaseCost.stateChanged.connect(self._verify_purchase_cost)
         self.checkBoxWarranty.stateChanged.connect(self._verify_warranty)
         self.checkBoxNotes.stateChanged.connect(self._verify_notes)
+        self.checkBoxCheckOutEnabled.stateChanged.connect(self._verify_check_out)
+        self.comboBoxCheckOutType.currentIndexChanged[int].connect(self._verify_check_out)
+        self.pushButtonRefresh.pressed.connect(self.refresh_comboboxes)
     
     def refresh_comboboxes(self):
         """ Downloads information from SnipeIT API to populate the combo boxes """
@@ -190,6 +193,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.supplier_model.sort(0, QtCore.Qt.AscendingOrder)
         self.comboBoxSupplier.setModel(self.supplier_model)
         logger.info('Finished refreshing the supplier combobox model')
+        self.set_defaults()
     
     def set_defaults(self):
         logger.info('Load settings from config file')
@@ -322,6 +326,33 @@ class Window(QMainWindow, Ui_MainWindow):
         self._verify_warranty()
         self._verify_notes()
 
+    def _verify_check_out(self):
+        """ If enable check out is changed or check out type is changed, update the list """
+        logger.debug('Verifying Check out')
+        if not self.checkBoxCheckOutEnabled.isChecked():
+            # Check out is not enabled
+            logger.debug('Enable Check Out not checked.  Disabled entries')
+            self.comboBoxCheckOutType.setEnabled(False)
+            self.comboBoxCheckoutTo.setEnabled(False)
+        elif self.checkBoxCheckOutEnabled.isChecked():
+            logger.debug('Enable Check out is checked.  Enable entries')
+            self.comboBoxCheckOutType.setEnabled(True)
+            self.comboBoxCheckoutTo.setEnabled(True)
+            # Update list here
+            if self.comboBoxCheckOutType.currentText() == 'User':
+                check_out_to_data = self._get_users()
+            elif self.comboBoxCheckOutType.currentText() == 'Asset':
+                check_out_to_data = self._get_assets()
+            elif self.comboBoxCheckOutType.currentText() == 'Location':
+                check_out_to_data = self._get_locations()
+            else:
+                check_out_to_data = None
+            self.comboBoxCheckoutTo.clear()
+            logger.debug(check_out_to_data)
+            if check_out_to_data:
+                self.comboBoxCheckoutTo.addItems(check_out_to_data)
+
+
     def _verify_order_number(self):
         logger.debug('Verifying order_number')
         if not self.checkBoxOrderNumber.isChecked():
@@ -330,7 +361,7 @@ class Window(QMainWindow, Ui_MainWindow):
             logger.debug('Order Number Fill not checked.  Disabled entries')
             self.labelOrderNumberError.setVisible(False)
             self.lineEditOrderNumber.setReadOnly(True)
-        if self.checkBoxOrderNumber.isChecked():
+        elif self.checkBoxOrderNumber.isChecked():
             logger.debug('Order Number Fill is checked.  Enable entries')
             self.lineEditOrderNumber.setReadOnly(False)
 
@@ -342,7 +373,7 @@ class Window(QMainWindow, Ui_MainWindow):
             logger.debug('Purchase Cost Fill not checked.  Disabled entries')
             self.labelPurchaseCostError.setVisible(False)
             self.lineEditPurchaseCost.setReadOnly(True)
-        if self.checkBoxPurchaseCost.isChecked():
+        elif self.checkBoxPurchaseCost.isChecked():
             logger.debug('Purchase Cost Fill is checked.  Enable entries')
             self.lineEditPurchaseCost.setReadOnly(False)
 
@@ -354,7 +385,7 @@ class Window(QMainWindow, Ui_MainWindow):
             logger.debug('Warranty Fill not checked.  Disabled entries')
             self.labelWarrantyError.setVisible(False)
             self.lineEditWarranty.setReadOnly(True)
-        if self.checkBoxWarranty.isChecked():
+        elif self.checkBoxWarranty.isChecked():
             logger.debug('Warranty Fill is checked.  Enable entries')
             self.lineEditWarranty.setReadOnly(False)
 
@@ -366,7 +397,7 @@ class Window(QMainWindow, Ui_MainWindow):
             logger.debug('Notes Fill not checked.  Disabled entries')
             self.labelNotesError.setVisible(False)
             self.lineEditNotes.setReadOnly(True)
-        if self.checkBoxNotes.isChecked():
+        elif self.checkBoxNotes.isChecked():
             logger.debug('Notes Fill is checked.  Enable entries')
             self.lineEditNotes.setReadOnly(False)
 
@@ -378,7 +409,7 @@ class Window(QMainWindow, Ui_MainWindow):
             logger.debug('Purchase Date Fill not checked.  Disabled entries')
             self.labelPurchaseDateError.setVisible(False)
             self.dateEditPurchaseDate.setReadOnly(True)
-        if self.checkBoxPurchaseDate.isChecked():
+        elif self.checkBoxPurchaseDate.isChecked():
             logger.debug('Purchase Date Fill is checked.  Enable entries')
             self.dateEditPurchaseDate.setReadOnly(False)
 
@@ -403,5 +434,32 @@ class Window(QMainWindow, Ui_MainWindow):
                 logger.debug('Append not checked.')
                 self.lineEditAssetNameAppend.setReadOnly(True)
         logger.debug('Completed verifying Asset Name')
+
+    def _get_users(self):
+        users = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'users').get_all()
+        if not users:
+            logger.critical('API Error, unable to get users')
+            sys.exit()
+        logger.debug('received %s users.', len(users))
+        mylist = [n['name'] for n in users]
+        return mylist
+
+    def _get_assets(self):
+        hardware = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware').get_all()
+        if not hardware:
+            logger.critical('API Error, unable to get users')
+            sys.exit()
+        logger.debug('received %s assets.', len(hardware))
+        mylist = [n['name'] for n in hardware]
+        return mylist
+
+    def _get_locations(self):
+        locations = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'locations').get_all()
+        if not locations:
+            logger.critical('API Error, unable to get users')
+            sys.exit()
+        logger.debug('received %s locations.', len(locations))
+        mylist = [n['name'] for n in locations]
+        return mylist
 
 

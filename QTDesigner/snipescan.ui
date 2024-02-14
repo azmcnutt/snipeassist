@@ -1048,9 +1048,11 @@
        <height>22</height>
       </rect>
      </property>
-     <property name="currentText">
-      <string>User</string>
-     </property>
+     <item>
+      <property name="text">
+       <string>None</string>
+      </property>
+     </item>
      <item>
       <property name="text">
        <string>User</string>
