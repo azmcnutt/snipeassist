@@ -10,26 +10,28 @@ from project import all_snipe_endpoints
 
 MAX_LIMIT = 500
 
+logging.config.dictConfig(settings.LOGGING_CONFIG)
+logger = logging.getLogger(__name__)
 
 class SnipeGet:
 
     def __init__(self, snipe_url, api_key, endpoint='hardware', limit=500):
-        logging.config.dictConfig(settings.LOGGING_CONFIG)
-        self.logger = logging.getLogger(__name__)
+
 
         self._api_key = api_key
         self._snipe_url = snipe_url
         if endpoint in all_snipe_endpoints:
+            logger.debug('New Snipe Instance for endpoint: %s', endpoint)
             self._endpoint = endpoint
         else:
-            self.logger.error('Endpoint %s not defined, defaulting to hardware', endpoint)
+            logger.error('Endpoint %s not defined, defaulting to hardware', endpoint)
             self._endpoint = 'hardware'
         if limit > MAX_LIMIT:
-            self.logger.warning('Limit %s is higher than %s, setting to %s',
+            logger.warning('Limit %s is higher than %s, setting to %s',
                                 limit, MAX_LIMIT, MAX_LIMIT)
             limit = MAX_LIMIT
         elif limit <= 0:
-            self.logger.warning('Limit %s is lower than 1, setting to %s',
+            logger.warning('Limit %s is lower than 1, setting to %s',
                                 limit, MAX_LIMIT)
             limit = MAX_LIMIT
         self._limit = limit
@@ -42,10 +44,16 @@ class SnipeGet:
     def get_all(self):
         ret = []
         offset = 0
+        logger.debug('Getting all records for endpoint %s', self._endpoint)
         try:
             response = requests.get(self._url, headers=self._headers)
             for r in response.json()['rows']:
                 ret.append(r)
+            logger.debug('Received %s rows out of %s from endpoint: %s',
+                         len(ret),
+                         response.json()['total'],
+                         self._endpoint
+                         )
             while response.json()['total'] > len(ret):
                 offset += self._limit
                 temp_url = self._url + '&offset=' + str(offset)
@@ -53,19 +61,24 @@ class SnipeGet:
                                         headers=self._headers)
                 for r in response.json()['rows']:
                     ret.append(r)
+                logger.debug('Received %s rows out of %s from endpoint: %s',
+                             len(ret),
+                             response.json()['total'],
+                             self._endpoint
+                             )
             return ret
         except:
             return None
 
-    def get_by_id(self, id):
+    def get_by_id(self, snipe_id):
         try:
-            response = requests.get(self._snipe_url + self._endpoint + '/' + str(id), headers=self._headers)
+            response = requests.get(self._snipe_url + self._endpoint + '/' + str(snipe_id), headers=self._headers)
             if response.status_code == 200:
                 return response.json()
             else:
                 return None
         except Exception as e:
-            self.logger.warning(e)
+            logger.warning(e)
             return None
 
     def count(self):

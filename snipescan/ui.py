@@ -46,6 +46,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.custom_fields = {}
 
         # Setup object to load and save form settings
+        logger.debug('Set up mappings for savings settings.  Settings will be saved to snipescan.json')
         self.config = ConfigManager(filename="snipescan.json")
         self.config.add_handler('comboBoxCompany', self.comboBoxCompany)
         self.config.add_handler('comboBoxModel', self.comboBoxModel)
@@ -74,6 +75,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.config.add_handler('comboBoxCheckoutTo', self.comboBoxCheckoutTo)
 
         # set up form defaults
+        logger.debug('Set up defaults if settings do not exist.')
         self.labelScanning.setText('')
         self.lineEditScanning.setReadOnly(True)
         self.pushButtonNext.setEnabled(False)
@@ -227,10 +229,12 @@ class Window(QMainWindow, Ui_MainWindow):
         logger.debug('ComboboxModel Updated: ID: %s, Name: %s', _id, name)
         model = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'models').get_by_id(_id)
         if model['fieldset']:
+            logger.debug('Custom fields found for model (%s) %s.  Setting up custom field tabs', _id, name)
             logger.debug('Fieldset id: %s', model['fieldset']['id'])
             fieldset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'fieldsets').get_by_id(model['fieldset']['id'])
             logger.debug('Fieldset ID: %s - %s', fieldset['id'], fieldset['name'])
             for f in fieldset['fields']['rows']:
+                logger.debug('Setting up Custom field %s', f['db_column_name'])
                 tab = QtWidgets.QWidget()
                 fieldset_tab_id = self.tabWidgetCustomFields.addTab(tab, f['name'])
                 self.custom_fields[fieldset_tab_id] = {}
@@ -243,9 +247,11 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.custom_fields[fieldset_tab_id]['scan'].setVisible(True)
                 self.config.add_handler(f['db_column_name']+'_scan', self.custom_fields[fieldset_tab_id]['scan'])
                 if f['field_values_array']:
+                    logger.debug('Setting up a combobox for Custom field %s', f['db_column_name'])
                     self.custom_fields[fieldset_tab_id]['data'] = QtWidgets.QComboBox(tab)
                     self.custom_fields[fieldset_tab_id]['data'].addItems(f['field_values_array'])
                 else:
+                    logger.debug('Setting up a lineedit for Custom field %s', f['db_column_name'])
                     self.custom_fields[fieldset_tab_id]['data'] = QtWidgets.QLineEdit(tab)
                 self.custom_fields[fieldset_tab_id]['data'].setGeometry(QtCore.QRect(0, 50, 300, 22))
                 self.custom_fields[fieldset_tab_id]['data'].setVisible(True)
@@ -253,13 +259,6 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 logger.debug('id: %s - name: %s - db_column: %s', f['id'], f['name'], f['db_column_name'])
                 logger.debug('Choices: %s', f['field_values_array'])
-
-    @QtCore.Slot(int)
-    def custom_scan_index_changed(self, indx):
-        logger.debug(indx)
-        # _id = indx.data()
-        # name = indx.text()
-        # logger.debug('ComboboxLocation Updated: ID: %s, Name: %s', _id, name)
 
     @QtCore.Slot(int)
     def location_index_changed(self, row):
@@ -348,7 +347,6 @@ class Window(QMainWindow, Ui_MainWindow):
             else:
                 check_out_to_data = None
             self.comboBoxCheckoutTo.clear()
-            logger.debug(check_out_to_data)
             if check_out_to_data:
                 self.comboBoxCheckoutTo.addItems(check_out_to_data)
 
