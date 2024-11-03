@@ -352,7 +352,7 @@
       <rect>
        <x>95</x>
        <y>40</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -365,7 +365,7 @@
       <rect>
        <x>95</x>
        <y>70</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -378,7 +378,7 @@
       <rect>
        <x>95</x>
        <y>100</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -391,7 +391,7 @@
       <rect>
        <x>95</x>
        <y>130</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -404,7 +404,7 @@
       <rect>
        <x>95</x>
        <y>160</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -417,7 +417,7 @@
       <rect>
        <x>95</x>
        <y>190</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -456,7 +456,7 @@
       <rect>
        <x>385</x>
        <y>40</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -901,24 +901,24 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBoxScanable">
+   <widget class="QGroupBox" name="groupBoxScannable">
     <property name="geometry">
      <rect>
       <x>490</x>
       <y>70</y>
-      <width>121</width>
+      <width>131</width>
       <height>101</height>
      </rect>
     </property>
     <property name="title">
-     <string>Scanable Items</string>
+     <string>Scannable Items</string>
     </property>
     <widget class="QCheckBox" name="checkBoxScanAssetTag">
      <property name="geometry">
       <rect>
        <x>90</x>
        <y>42</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -931,7 +931,7 @@
       <rect>
        <x>90</x>
        <y>72</y>
-       <width>15</width>
+       <width>16</width>
        <height>17</height>
       </rect>
      </property>
@@ -1085,10 +1085,10 @@
     <widget class="QTabWidget" name="tabWidgetCustomFields">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>20</y>
-       <width>821</width>
-       <height>141</height>
+       <width>811</width>
+       <height>121</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -1140,7 +1140,7 @@ Scanning</string>
       <x>10</x>
       <y>470</y>
       <width>831</width>
-      <height>121</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="title">

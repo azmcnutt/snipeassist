@@ -117,6 +117,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.checkBoxCheckOutEnabled.stateChanged.connect(self._verify_check_out)
         self.comboBoxCheckOutType.currentIndexChanged[int].connect(self._verify_check_out)
         self.pushButtonRefresh.pressed.connect(self.refresh_comboboxes)
+        self.pushButtonScan.pressed.connect(self.start_scanning)
+        self.pushButtonNext.pressed.connect(self._scan_next_button)
+
     
     def refresh_comboboxes(self):
         """ Downloads information from SnipeIT API to populate the combo boxes """
@@ -241,10 +244,12 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.custom_fields[fieldset_tab_id]['label'] = QtWidgets.QLabel(f['db_column_name'], tab)
                 self.custom_fields[fieldset_tab_id]['label'].setGeometry(QtCore.QRect(0, 0, 300, 16))
                 self.custom_fields[fieldset_tab_id]['label'].setVisible(True)
+                self.custom_fields[fieldset_tab_id]['label'].setObjectName('label')
                 self.custom_fields[fieldset_tab_id]['scan'] = QtWidgets.QComboBox(tab)
                 self.custom_fields[fieldset_tab_id]['scan'].addItems(['Do not record', 'Fill', 'Scan'])
                 self.custom_fields[fieldset_tab_id]['scan'].setGeometry(QtCore.QRect(0, 25, 300, 22))
                 self.custom_fields[fieldset_tab_id]['scan'].setVisible(True)
+                self.custom_fields[fieldset_tab_id]['scan'].setObjectName('scan')
                 self.config.add_handler(f['db_column_name']+'_scan', self.custom_fields[fieldset_tab_id]['scan'])
                 if f['field_values_array']:
                     logger.debug('Setting up a combobox for Custom field %s', f['db_column_name'])
@@ -255,6 +260,7 @@ class Window(QMainWindow, Ui_MainWindow):
                     self.custom_fields[fieldset_tab_id]['data'] = QtWidgets.QLineEdit(tab)
                 self.custom_fields[fieldset_tab_id]['data'].setGeometry(QtCore.QRect(0, 50, 300, 22))
                 self.custom_fields[fieldset_tab_id]['data'].setVisible(True)
+                self.custom_fields[fieldset_tab_id]['data'].setObjectName('data')
                 self.config.add_handler(f['db_column_name'] + '_data', self.custom_fields[fieldset_tab_id]['data'])
 
                 logger.debug('id: %s - name: %s - db_column: %s', f['id'], f['name'], f['db_column_name'])
@@ -459,3 +465,103 @@ class Window(QMainWindow, Ui_MainWindow):
         logger.debug('received %s locations.', len(locations))
         mylist = [n['name'] for n in locations]
         return mylist
+    
+    def _set_items_read_only(self):
+        logger.debug('Setting items to read only')
+        items = self.groupBoxRequired.findChildren(QtWidgets.QComboBox)
+        items += self.groupBoxStatic.findChildren(QtWidgets.QCheckBox)
+        items += self.groupBoxStatic.findChildren(QtWidgets.QLineEdit)
+        items += self.groupBoxStatic.findChildren(QtWidgets.QDateEdit)
+        items += self.groupBoxScannable.findChildren(QtWidgets.QCheckBox)
+        items += self.groupBoxCheckout.findChildren(QtWidgets.QCheckBox)
+        items += self.groupBoxCheckout.findChildren(QtWidgets.QComboBox)
+        items += self.groupBoxCustom.findChildren(QtWidgets.QComboBox)
+        items += self.groupBoxCustom.findChildren(QtWidgets.QLineEdit)
+        for item in items:
+            logger.debug('%s deactivated', item.objectName())
+            item.setEnabled(False)
+
+    def _set_items_read_write(self):
+        logger.debug('Setting items to read write')
+        items = self.groupBoxStatic.findChildren(QtWidgets.QCheckBox)
+        items += self.groupBoxStatic.findChildren(QtWidgets.QCheckBox)
+        items += self.groupBoxStatic.findChildren(QtWidgets.QLineEdit)
+        items += self.groupBoxStatic.findChildren(QtWidgets.QDateEdit)
+        items += self.groupBoxScannable.findChildren(QtWidgets.QCheckBox)
+        items += self.groupBoxCheckout.findChildren(QtWidgets.QCheckBox)
+        items += self.groupBoxCheckout.findChildren(QtWidgets.QComboBox)
+        items += self.groupBoxCustom.findChildren(QtWidgets.QComboBox)
+        items += self.groupBoxCustom.findChildren(QtWidgets.QLineEdit)
+        for item in items:
+            logger.debug('%s activated', item.objectName())
+            item.setEnabled(True)
+        self._verify_static_items()
+    
+    def start_scanning(self):
+        logger.debug('Scan button pressed')
+        if self.pushButtonScan.text() == 'Start\nScanning':
+            logger.debug('Action: start scanning')
+            self.pushButtonScan.setText('Stop\nScanning')
+            self._set_items_read_only()
+            
+            # create the master asset with the default-values
+            self._master_asset = {}
+            self._master_asset['Company'] = self.company_model.item(self.comboBoxCompany.currentIndex()).data()
+            self._master_asset['Model'] = self.model_model.item(self.comboBoxModel.currentIndex()).data()
+            self._master_asset['Location'] = self.location_model.item(self.comboBoxLocation.currentIndex()).data()
+            self._master_asset['Status'] = self.status_model.item(self.comboBoxStatus.currentIndex()).data()
+            self._master_asset['Supplier'] = self.supplier_model.item(self.comboBoxSupplier.currentIndex()).data()
+            if self.checkBoxAssetName.isChecked():
+                self._master_asset['name'] = self.lineEditAssetName.text()
+                if self.checkBoxAppend.isChecked():
+                    self._master_asset['name_append'] = self.lineEditAssetNameAppend.text()
+            if self.checkBoxPurchaseDate.isChecked():
+                self._master_asset['purchase_date'] = QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyy-M-d')
+            if self.checkBoxOrderNumber.isChecked():
+                self._master_asset['order_number'] = self.lineEditOrderNumber.text()
+            if self.checkBoxPurchaseCost.isChecked():
+                self._master_asset['purchase_cost'] = self.lineEditPurchaseCost.text()
+            if self.checkBoxWarranty.isChecked():
+                self._master_asset['warranty'] = self.lineEditWarranty.text()
+            if self.checkBoxNotes.isChecked():
+                self._master_asset['notes'] = self.lineEditNotes.text()
+            if self.checkBoxScanAssetTag.isChecked():
+                self._master_asset['asset_tag'] = '{{SCAN}}'
+            if self.checkBoxScanSerial.isChecked():
+                self._master_asset['serial'] = '{{SCAN}}'
+            for i in range(self.tabWidgetCustomFields.count()):
+                # name, label, scan, data
+                # self.custom_fields[fieldset_tab_id]['label'] = QtWidgets.QLabel(f['db_column_name'], tab)
+                # self.tab_widget.widget(tab_index)
+                tab = self.tabWidgetCustomFields.widget(i)
+                if tab:
+                    label = tab.findChild(QtWidgets.QLabel, 'label').text()
+                    scan = tab.findChild(QtWidgets.QComboBox, 'scan').currentText()
+                    # 'Do not record', 'Fill', 'Scan'
+                    if scan == 'Scan':
+                        self._master_asset[label] = '{{SCAN}}'
+                        logger.debug('Custom Field: %s - set to scan', self.tabWidgetCustomFields.tabText(i))
+                    elif scan == 'Fill':
+                        if tab.findChild(QtWidgets.QComboBox, 'data'):
+                            self._master_asset[label] = tab.findChild(QtWidgets.QComboBox, 'data').currentText()
+                            logger.debug('Custom Field: %s - set to fill with %s', 
+                                         self.tabWidgetCustomFields.tabText(i),
+                                         self._master_asset[label]
+                            )
+                        elif tab.findChild(QtWidgets.QLineEdit, 'data'):
+                            self._master_asset[label] = tab.findChild(QtWidgets.QLineEdit, 'data').text()
+                            logger.debug('Custom Field: %s - set to fill with %s', 
+                                         self.tabWidgetCustomFields.tabText(i),
+                                         self._master_asset[label]
+                            )
+                        else:
+                            logger.warning('Unable to determine data for custom field %s', self.tabWidgetCustomFields.tabText(i))
+            logger.debug(self._master_asset)
+
+        else:
+            logger.debug('Action: end scanning')
+            self.pushButtonScan.setText('Start\nScanning')
+            self._set_items_read_write()
+
+    def _scan_next_button(self):
+        pass
