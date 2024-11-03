@@ -87,8 +87,15 @@ class SnipeGet:
                 self._snipe_url + self._endpoint,
                 headers=self._headers
             )
-            return response.json()['total']
-        except:
+            if response.status_code == 200:
+                return response.json()['total']
+            else:
+                logger.critical('Error connecting to SnipeIT.  Error returned: %s',
+                               response.status_code
+                )
+                return None
+        except Exception as e:
+            logger.warning(e)
             return None
 
     def get_snipe_url(self):

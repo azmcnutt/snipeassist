@@ -445,7 +445,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def _get_assets(self):
         hardware = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware').get_all()
         if not hardware:
-            logger.critical('API Error, unable to get users')
+            logger.critical('API Error, unable to get assets')
             sys.exit()
         logger.debug('received %s assets.', len(hardware))
         mylist = [n['name'] for n in hardware]
@@ -454,10 +454,8 @@ class Window(QMainWindow, Ui_MainWindow):
     def _get_locations(self):
         locations = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'locations').get_all()
         if not locations:
-            logger.critical('API Error, unable to get users')
+            logger.critical('API Error, unable to get locations')
             sys.exit()
         logger.debug('received %s locations.', len(locations))
         mylist = [n['name'] for n in locations]
         return mylist
-
-
