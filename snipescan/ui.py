@@ -483,7 +483,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _set_items_read_write(self):
         logger.debug('Setting items to read write')
-        items = self.groupBoxStatic.findChildren(QtWidgets.QCheckBox)
+        items = self.groupBoxRequired.findChildren(QtWidgets.QComboBox)
+        items += self.groupBoxStatic.findChildren(QtWidgets.QCheckBox)
         items += self.groupBoxStatic.findChildren(QtWidgets.QCheckBox)
         items += self.groupBoxStatic.findChildren(QtWidgets.QLineEdit)
         items += self.groupBoxStatic.findChildren(QtWidgets.QDateEdit)
