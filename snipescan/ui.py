@@ -1,11 +1,15 @@
 import sys
 import logging
 import logging.config
+import copy
 
-from PySide6.QtWidgets import QMainWindow, QApplication
+
+from PySide6.QtWidgets import QMainWindow, QApplication, QDialog, QVBoxLayout, QPushButton
 from PySide6 import QtGui, QtCore, QtWidgets
 
 from pyqtconfig import ConfigManager
+
+from playsound3 import playsound
 
 from ui_snipescan import Ui_MainWindow
 from ui_loading import Ui_Dialog
@@ -119,6 +123,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.pushButtonRefresh.pressed.connect(self.refresh_comboboxes)
         self.pushButtonScan.pressed.connect(self.start_scanning)
         self.pushButtonNext.pressed.connect(self._scan_next_button)
+        self.lineEditScanning.returnPressed.connect(self._scan_next_button)
+        
+        
 
     
     def refresh_comboboxes(self):
@@ -345,16 +352,14 @@ class Window(QMainWindow, Ui_MainWindow):
             self.comboBoxCheckoutTo.setEnabled(True)
             # Update list here
             if self.comboBoxCheckOutType.currentText() == 'User':
-                check_out_to_data = self._get_users()
+                self.checkout_to_refresh('users')
             elif self.comboBoxCheckOutType.currentText() == 'Asset':
-                check_out_to_data = self._get_assets()
+                self.checkout_to_refresh('hardware')
             elif self.comboBoxCheckOutType.currentText() == 'Location':
-                check_out_to_data = self._get_locations()
+                self.checkout_to_refresh('locations')
             else:
-                check_out_to_data = None
-            self.comboBoxCheckoutTo.clear()
-            if check_out_to_data:
-                self.comboBoxCheckoutTo.addItems(check_out_to_data)
+                self.comboBoxCheckoutTo.clear()
+            
 
 
     def _verify_order_number(self):
@@ -439,32 +444,28 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.lineEditAssetNameAppend.setReadOnly(True)
         logger.debug('Completed verifying Asset Name')
 
-    def _get_users(self):
-        users = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'users').get_all()
-        if not users:
-            logger.critical('API Error, unable to get users')
+    def checkout_to_refresh(self, checkout_type):
+        if checkout_type not in ['hardware', 'users', 'locations']:
+            logger.error('Invalid checkout_type.  Received: %s, expected: hardware, users, or location', checkout_type)
+        chkout_list = SnipeGet(settings.SNIPE_URL, settings.API_KEY, checkout_type).get_all()
+        if not chkout_list:
+            logger.critical('API Error, unable to get check out list')
             sys.exit()
-        logger.debug('received %s users.', len(users))
-        mylist = [n['name'] for n in users]
-        return mylist
-
-    def _get_assets(self):
-        hardware = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware').get_all()
-        if not hardware:
-            logger.critical('API Error, unable to get assets')
-            sys.exit()
-        logger.debug('received %s assets.', len(hardware))
-        mylist = [n['name'] for n in hardware]
-        return mylist
-
-    def _get_locations(self):
-        locations = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'locations').get_all()
-        if not locations:
-            logger.critical('API Error, unable to get locations')
-            sys.exit()
-        logger.debug('received %s locations.', len(locations))
-        mylist = [n['name'] for n in locations]
-        return mylist
+        logger.debug('received %s %s.  Populating checkout model', len(chkout_list), checkout_type)
+        self.checkout_model = QtGui.QStandardItemModel()
+        for chkout_to in chkout_list:
+            id = chkout_to['id']
+            name = chkout_to['name']
+            if checkout_type == 'users':
+                name = chkout_to['username']
+            logger.debug('Adding id: %s for checkout to: %s', id, name)
+            c = QtGui.QStandardItem(name)
+            c.setData(id)
+            self.checkout_model.appendRow(c)
+        self.checkout_model.sort(0, QtCore.Qt.AscendingOrder)
+        logger.debug('Setting checkout combobox model')
+        self.comboBoxCheckoutTo.setModel(self.checkout_model)
+        logger.info('Finished refreshing the checkout combobox model')
     
     def _set_items_read_only(self):
         logger.debug('Setting items to read only')
@@ -507,17 +508,18 @@ class Window(QMainWindow, Ui_MainWindow):
             
             # create the master asset with the default-values
             self._master_asset = {}
-            self._master_asset['Company'] = self.company_model.item(self.comboBoxCompany.currentIndex()).data()
-            self._master_asset['Model'] = self.model_model.item(self.comboBoxModel.currentIndex()).data()
-            self._master_asset['Location'] = self.location_model.item(self.comboBoxLocation.currentIndex()).data()
-            self._master_asset['Status'] = self.status_model.item(self.comboBoxStatus.currentIndex()).data()
-            self._master_asset['Supplier'] = self.supplier_model.item(self.comboBoxSupplier.currentIndex()).data()
+            self._master_asset['company_id'] = self.company_model.item(self.comboBoxCompany.currentIndex()).data()
+            self._master_asset['model_id'] = self.model_model.item(self.comboBoxModel.currentIndex()).data()
+            self._master_asset['location_id'] = self.location_model.item(self.comboBoxLocation.currentIndex()).data()
+            self._master_asset['rtd_location_id'] = self.location_model.item(self.comboBoxLocation.currentIndex()).data()
+            self._master_asset['status_id'] = self.status_model.item(self.comboBoxStatus.currentIndex()).data()
+            self._master_asset['supplier_id'] = self.supplier_model.item(self.comboBoxSupplier.currentIndex()).data()
             if self.checkBoxAssetName.isChecked():
                 self._master_asset['name'] = self.lineEditAssetName.text()
-                if self.checkBoxAppend.isChecked():
-                    self._master_asset['name_append'] = self.lineEditAssetNameAppend.text()
+                # if self.checkBoxAppend.isChecked():
+                #     self._master_asset['name_append'] = self.lineEditAssetNameAppend.text()
             if self.checkBoxPurchaseDate.isChecked():
-                self._master_asset['purchase_date'] = QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyy-M-d')
+                self._master_asset['purchase_date'] = QtCore.QDate(self.dateEditPurchaseDate.date()).toString('yyyy-MM-dd')
             if self.checkBoxOrderNumber.isChecked():
                 self._master_asset['order_number'] = self.lineEditOrderNumber.text()
             if self.checkBoxPurchaseCost.isChecked():
@@ -558,11 +560,80 @@ class Window(QMainWindow, Ui_MainWindow):
                         else:
                             logger.warning('Unable to determine data for custom field %s', self.tabWidgetCustomFields.tabText(i))
             logger.debug(self._master_asset)
+            if '{{SCAN}}' not in self._master_asset.values():
+                self.labelScanning.setText('Nothing to Scan.  Nothing to do.')
+                self.lineEditScanning.setReadOnly(True)
+                self.pushButtonNext.setEnabled(False)
+                return
+            self._scanning_asset = copy.deepcopy(self._master_asset)
 
+            # Enable scanning items
+            self.lineEditScanning.setReadOnly(False)
+            self.pushButtonNext.setEnabled(True)
+            # self.pushButtonNext.setDefault(True)
+            self._scan_next_button()
         else:
             logger.debug('Action: end scanning')
             self.pushButtonScan.setText('Start\nScanning')
             self._set_items_read_write()
+            
+            # Disable scanning items
+            self.lineEditScanning.setText('')
+            self.labelScanning.setText('')
+            self.labelScanStatus.setText('')
+            self.lineEditScanning.setReadOnly(True)
+            self.pushButtonNext.setEnabled(False)
 
     def _scan_next_button(self):
-        pass
+        if self.lineEditScanning.text():
+            self._scanning_asset[self.labelScanning.text()] = self.lineEditScanning.text()
+            self.lineEditScanning.setText('')
+            self.labelScanStatus.setText('Data Accepted')
+            playsound(settings.SOUND_DING)
+        if '{{SCAN}}' in self._scanning_asset.values():
+            for key, val in self._scanning_asset.items():
+                if val == '{{SCAN}}':
+                    self.labelScanning.setText(key)
+                    self.lineEditScanning.setFocus()
+                    break
+        else:
+            # create asset
+            if self.checkBoxAppend.isChecked() and self.checkBoxAssetName.isChecked():
+                logger.debug(self._scanning_asset['name'] + self.lineEditAssetNameAppend.text())
+                self._scanning_asset['name'] += self.lineEditAssetNameAppend.text()
+            logger.debug(self._scanning_asset)
+            _created_asset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware').create_asset(self._scanning_asset)
+            if _created_asset['messages'] == 'Asset created successfully. :)':
+                logger.info(f'Asset Create.  Snipe ID: {_created_asset["payload"]["id"]}')
+                self.labelScanStatus.setText(f'Asset Created: {_created_asset["payload"]["id"]}')
+                if self.checkBoxAppend.isChecked():
+                    # self.lineEditAssetNameAppend.setEnabled(True)
+                    self.lineEditAssetNameAppend.setText(str(int('9' + self.lineEditAssetNameAppend.text()) + 1)[1:])
+                    # self.lineEditAssetNameAppend.setEnabled(False)
+                if settings.SAVE_ON_EXIT:
+                    self.save_settings()
+                if self.checkBoxCheckOutEnabled.isChecked():
+                    logger.debug(f'Check out is checked, Checking out SNIPE ID: {_created_asset["payload"]["id"]}')
+                    _checkedout_asset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware').checkout_asset(
+                        _created_asset["payload"]["id"],
+                        self.comboBoxCheckOutType.currentText(),
+                        self.checkout_model.item(self.comboBoxCheckoutTo.currentIndex()).data(),
+                    )
+                    if _checkedout_asset['messages'] == 'Asset checked out successfully.':
+                        logger.info(f'Asset Checked out.  Asset Snipe ID: {_created_asset["payload"]["id"]}, Checkout ID: {_checkedout_asset["payload"]["asset"]}')
+                        self.labelScanStatus.setText(f'Asset Checked Out: {_created_asset["payload"]["id"]} - {_checkedout_asset["payload"]["asset"]}')
+                        playsound(settings.SOUND_SUCCESS)
+                    else:
+                        logger.warning(f'Asset created, but not checked out: {_checkedout_asset["messages"]}')
+                        self.labelScanStatus.setText(f'Asset Created, check out fail: {_created_asset["payload"]["id"]}')
+                        playsound(settings.SOUND_WARNING)
+                else:
+                    self.labelScanStatus.setText(f'Asset Created: {_created_asset["payload"]["id"]}')
+                    playsound(settings.SOUND_SUCCESS)
+            else:
+                logger.warning(f'Asset not created: {_created_asset["messages"]}')
+                self.labelScanStatus.setText(f'Asset Not Created')
+                playsound(settings.SOUND_WARNING)
+            self._scanning_asset = copy.deepcopy(self._master_asset)
+            self._scan_next_button()
+

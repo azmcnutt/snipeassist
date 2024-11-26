@@ -97,6 +97,60 @@ class SnipeGet:
         except Exception as e:
             logger.warning(e)
             return None
+    
+    def create_asset(self, asset):
+        logger.debug('Creating Asset:')
+        logger.debug(asset)
+        headers = self._headers
+        headers['content-type'] = 'application/json'
+        response = requests.post(self._snipe_url + self._endpoint, json=asset, headers=headers)
+        logger.debug(f'Request Response Status Code: {response.status_code}')
+        data = json.loads(response.text)
+        if data['status'] == 'success':
+            logger.debug('Snipe API Reports status success')
+            if data['messages'] == 'Asset created successfully. :)':
+                logger.debug('Snipe API Reports Asset created')
+            else:
+                logger.debug(f'Snipe API Reports: {data["messages"]}')
+        else:
+            logger.warn(f'Snipe API reports status: {data["status"]}')
+        return data
+    
+    def checkout_asset(self, asset_id, checkout_type, assigned_to_id):
+        checkout_type = checkout_type.lower()
+        if checkout_type not in ['user', 'asset', 'location']:
+            logger.warning(f'Check out type not valid: {checkout_type}.  Expected user, asset, or location')
+            return {'status': 'error'}
+        if checkout_type == 'user':
+            assigned_type = 'assigned_user'
+        elif checkout_type == 'asset':
+            assigned_type = 'assigned_asset'
+        elif checkout_type == 'location':
+            assigned_type = 'assigned_location'
+        else:
+            logger.critical('Critical error occurred while assigning Check out type.')
+            return {'status': 'error'}
+        logger.debug('Checking out Asset:')
+        logger.debug(asset_id)
+        headers = self._headers
+        headers['content-type'] = 'application/json'
+        checkout_url = self._snipe_url + self._endpoint + '/' + str(asset_id) + '/checkout'
+        payload = {
+            'checkout_to_type': checkout_type,
+            assigned_type: assigned_to_id,
+        }
+        response = requests.post(checkout_url, json=payload, headers=headers)
+        logger.debug(f'Request Response Status Code: {response.status_code}')
+        data = json.loads(response.text)
+        if data['status'] == 'success':
+            logger.debug('Snipe API Reports status success')
+            if data['messages'] == 'Asset checked out successfully.':
+                logger.debug('Snipe API Reports Asset Checked Out')
+            else:
+                logger.debug(f'Snipe API Reports: {data["messages"]}')
+        else:
+            logger.warn(f'Snipe API reports status: {data["status"]}')
+        return data
 
     def get_snipe_url(self):
         return self._snipe_url

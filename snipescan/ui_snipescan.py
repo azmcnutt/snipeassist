@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'snipescan.ui'
+## Form generated from reading UI file 'snipescanpaxDju.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.4.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -328,6 +328,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tabWidgetCustomFields.setCurrentIndex(0)
+        self.pushButtonNext.setDefault(True)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
