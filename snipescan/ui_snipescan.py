@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'snipescanpaxDju.ui'
+## Form generated from reading UI file 'snipescan.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.3
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -293,19 +293,21 @@ class Ui_MainWindow(object):
         self.labelScanning.setObjectName(u"labelScanning")
         self.labelScanning.setGeometry(QRect(10, 20, 397, 33))
         font = QFont()
-        font.setPointSize(22)
+        font.setPointSize(18)
         self.labelScanning.setFont(font)
         self.lineEditScanning = QLineEdit(self.groupBoxScanning)
         self.lineEditScanning.setObjectName(u"lineEditScanning")
         self.lineEditScanning.setEnabled(True)
         self.lineEditScanning.setGeometry(QRect(10, 60, 400, 40))
-        self.lineEditScanning.setFont(font)
+        font1 = QFont()
+        font1.setPointSize(22)
+        self.lineEditScanning.setFont(font1)
         self.pushButtonNext = QPushButton(self.groupBoxScanning)
         self.pushButtonNext.setObjectName(u"pushButtonNext")
         self.pushButtonNext.setGeometry(QRect(420, 60, 64, 40))
-        font1 = QFont()
-        font1.setPointSize(9)
-        self.pushButtonNext.setFont(font1)
+        font2 = QFont()
+        font2.setPointSize(9)
+        self.pushButtonNext.setFont(font2)
         self.labelScanStatus = QLabel(self.groupBoxScanning)
         self.labelScanStatus.setObjectName(u"labelScanStatus")
         self.labelScanStatus.setGeometry(QRect(490, 60, 331, 33))

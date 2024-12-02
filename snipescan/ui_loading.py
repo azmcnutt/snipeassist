@@ -25,7 +25,12 @@ class Ui_Dialog(object):
         Dialog.resize(400, 300)
         self.label = QLabel(Dialog)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(108, 120, 141, 71))
+        self.label.setGeometry(QRect(8, 10, 381, 271))
+        font = QFont()
+        font.setPointSize(48)
+        font.setBold(True)
+        self.label.setFont(font)
+        self.label.setAlignment(Qt.AlignCenter)
 
         self.retranslateUi(Dialog)
 

@@ -337,6 +337,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self._verify_purchase_cost()
         self._verify_warranty()
         self._verify_notes()
+    
+    def _field_not_empty(self, f):
+        """Returns true if a field is not empty"""
+        logger.debug('Checking %s.', f.objectName())
+        return bool(f.text())
 
     def _verify_check_out(self):
         """ If enable check out is changed or check out type is changed, update the list """
@@ -359,8 +364,6 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.checkout_to_refresh('locations')
             else:
                 self.comboBoxCheckoutTo.clear()
-            
-
 
     def _verify_order_number(self):
         logger.debug('Verifying order_number')
@@ -629,6 +632,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.lineEditScanning.setReadOnly(True)
                 self.pushButtonNext.setEnabled(False)
                 return
+            self.create_asset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware')
             self._scanning_asset = copy.deepcopy(self._master_asset)
 
             # Enable scanning items
@@ -666,7 +670,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 logger.debug(self._scanning_asset['name'] + self.lineEditAssetNameAppend.text())
                 self._scanning_asset['name'] += self.lineEditAssetNameAppend.text()
             logger.debug(self._scanning_asset)
-            _created_asset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware').create_asset(self._scanning_asset)
+            _created_asset = self.create_asset.create_asset(self._scanning_asset)
             if _created_asset['messages'] == 'Asset created successfully. :)':
                 logger.info(f'Asset Create.  Snipe ID: {_created_asset["payload"]["id"]}')
                 self.labelScanStatus.setText(f'Asset Created: {_created_asset["payload"]["id"]}')
@@ -678,7 +682,7 @@ class Window(QMainWindow, Ui_MainWindow):
                     self.save_settings()
                 if self.checkBoxCheckOutEnabled.isChecked():
                     logger.debug(f'Check out is checked, Checking out SNIPE ID: {_created_asset["payload"]["id"]}')
-                    _checkedout_asset = SnipeGet(settings.SNIPE_URL, settings.API_KEY, 'hardware').checkout_asset(
+                    _checkedout_asset = self.create_asset.checkout_asset(
                         _created_asset["payload"]["id"],
                         self.comboBoxCheckOutType.currentText(),
                         self.checkout_model.item(self.comboBoxCheckoutTo.currentIndex()).data(),
