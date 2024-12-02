@@ -499,8 +499,72 @@ class Window(QMainWindow, Ui_MainWindow):
             item.setEnabled(True)
         self._verify_static_items()
     
+    def _sanity_checks_passed(self) -> bool:
+        checks = True
+        if self.checkBoxAssetName.isChecked():
+            if not self.lineEditAssetName.text():
+                self.labelNameError.setVisible(True)
+                checks = False
+            else:
+                self.labelNameError.setVisible(False)
+        if (self.checkBoxAssetName.isChecked()
+            and self.checkBoxAppend.isChecked()
+            and self.lineEditAssetName.text()):
+            if (not self.lineEditAssetNameAppend.text()
+                or not self.lineEditAssetNameAppend.text().isnumeric()
+            ):
+                self.labelNameError.setVisible(True)
+                checks = False
+            else:
+                self.labelNameError.setVisible(False)
+        if self.checkBoxPurchaseDate.isChecked():
+            if not self.dateEditPurchaseDate.text():
+                self.labelPurchaseDateError.setVisible(True)
+                checks = False
+            else:
+                self.labelPurchaseDateError.setVisible(False)
+        if self.checkBoxOrderNumber.isChecked():
+            if not self.lineEditOrderNumber.text():
+                self.labelOrderNumberError.setVisible(True)
+                checks = False
+            else:
+                self.labelOrderNumberError.setVisible(False)
+        if self.checkBoxPurchaseCost.isChecked():
+            if (not self.lineEditPurchaseCost.text()
+                or not self._is_float(self.lineEditPurchaseCost.text())
+            ):
+                self.labelPurchaseCostError.setVisible(True)
+                checks = False
+            else:
+                self.labelPurchaseCostError.setVisible(False)
+        if self.checkBoxWarranty.isChecked():
+            if (not self.lineEditWarranty.text()
+                or not self.lineEditWarranty.text().isnumeric()
+            ):
+                self.labelWarrantyError.setVisible(True)
+                checks = False
+            else:
+                self.labelWarrantyError.setVisible(False)
+        if self.checkBoxNotes.isChecked():
+            if not self.lineEditNotes.text():
+                self.labelNotesError.setVisible(True)
+                checks = False
+            else:
+                self.labelNotesError.setVisible(False)
+
+        return checks
+        
+    def _is_float(self, text):
+        try:
+            float(text)
+            return True
+        except ValueError:
+            return False
+        
     def start_scanning(self):
         logger.debug('Scan button pressed')
+        if not self._sanity_checks_passed():
+            return
         if self.pushButtonScan.text() == 'Start\nScanning':
             logger.debug('Action: start scanning')
             self.pushButtonScan.setText('Stop\nScanning')
