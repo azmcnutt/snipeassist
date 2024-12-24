@@ -657,7 +657,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self._scanning_asset[self.labelScanning.text()] = self.lineEditScanning.text()
             self.lineEditScanning.setText('')
             self.labelScanStatus.setText('Data Accepted')
-            playsound(settings.SOUND_DING)
+            playsound(settings.SOUND_DING, block=False)
         if '{{SCAN}}' in self._scanning_asset.values():
             for key, val in self._scanning_asset.items():
                 if val == '{{SCAN}}':
@@ -690,18 +690,18 @@ class Window(QMainWindow, Ui_MainWindow):
                     if _checkedout_asset['messages'] == 'Asset checked out successfully.':
                         logger.info(f'Asset Checked out.  Asset Snipe ID: {_created_asset["payload"]["id"]}, Checkout ID: {_checkedout_asset["payload"]["asset"]}')
                         self.labelScanStatus.setText(f'Asset Checked Out: {_created_asset["payload"]["id"]} - {_checkedout_asset["payload"]["asset"]}')
-                        playsound(settings.SOUND_SUCCESS)
+                        playsound(settings.SOUND_SUCCESS, block=False)
                     else:
                         logger.warning(f'Asset created, but not checked out: {_checkedout_asset["messages"]}')
                         self.labelScanStatus.setText(f'Asset Created, check out fail: {_created_asset["payload"]["id"]}')
-                        playsound(settings.SOUND_WARNING)
+                        playsound(settings.SOUND_WARNING, block=False)
                 else:
                     self.labelScanStatus.setText(f'Asset Created: {_created_asset["payload"]["id"]}')
-                    playsound(settings.SOUND_SUCCESS)
+                    playsound(settings.SOUND_SUCCESS, block=False)
             else:
                 logger.warning(f'Asset not created: {_created_asset["messages"]}')
                 self.labelScanStatus.setText(f'Asset Not Created')
-                playsound(settings.SOUND_WARNING)
+                playsound(settings.SOUND_WARNING, block=False)
             self._scanning_asset = copy.deepcopy(self._master_asset)
             self._scan_next_button()
 
