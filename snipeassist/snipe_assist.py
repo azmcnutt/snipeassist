@@ -16,9 +16,9 @@ def main():
 
     #let's setup logging
     logging.config.dictConfig(settings.LOGGING_CONFIG)
-    logger = logging.getLogger('snipescan')
+    logger = logging.getLogger('snipeassist')
     logger.info('***************************************')
-    logger.info('          Snipe scan starting')
+    logger.info('          Snipe Assist starting')
     logger.info('***************************************')
     logger.debug('Snipe URL: %s', settings.SNIPE_URL)
 

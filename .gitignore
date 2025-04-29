@@ -164,8 +164,8 @@ cython_debug/
 .vscode/
 
 # Settings file
-snipescan/settings.py
-snipescan.json
+snipeassist/settings.py
+snipeassist.json
 
 # Log files
-snipescan.log.*
+snipeassist.log.*

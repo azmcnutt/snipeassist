@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Paths
-SNIPESCAN_PATH = os.path.dirname(os.path.abspath(__file__))
+SNIPEASSIST_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # SnipeIT Information - Both the API Key and URL Are required.
 # URL must be in the format:
@@ -25,14 +25,14 @@ SAVE_ON_EXIT = True
 ASK_BEFORE_QUIT = True
 
 # Sound files
-SOUND_DING = SNIPESCAN_PATH + '/ding.mp3'
-SOUND_SUCCESS = SNIPESCAN_PATH + '/success.mp3'
-SOUND_WARNING = SNIPESCAN_PATH + '/warning.mp3'
+SOUND_DING = SNIPEASSIST_PATH + '/ding.mp3'
+SOUND_SUCCESS = SNIPEASSIST_PATH + '/success.mp3'
+SOUND_WARNING = SNIPEASSIST_PATH + '/warning.mp3'
 
 # Logging configuration
 LOG_LEVEL = 'INFO'
 LOG_FILE_LEVEL = 'INFO'
-LOG_NAME = 'snipescan.log'
+LOG_NAME = 'snipeassist.log'
 LOG_SIZE = 1024000
 LOG_COUNT = 3
 

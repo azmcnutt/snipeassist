@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'snipescan.ui'
+## Form generated from reading UI file 'snipeassist.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -337,7 +337,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Snipe Scan", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Snipe Assist", None))
         self.action_Exit.setText(QCoreApplication.translate("MainWindow", u"E&xit", None))
         self.action_Save.setText(QCoreApplication.translate("MainWindow", u"&Save", None))
         self.groupBoxRequired.setTitle(QCoreApplication.translate("MainWindow", u"Required Items", None))

@@ -11,7 +11,7 @@ from pyqtconfig import ConfigManager
 
 from playsound3 import playsound
 
-from ui_snipescan import Ui_MainWindow
+from ui_snipeassist import Ui_MainWindow
 from ui_loading import Ui_Dialog
 from snipeapi import SnipeGet
 import settings
@@ -50,8 +50,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.custom_fields = {}
 
         # Setup object to load and save form settings
-        logger.debug('Set up mappings for savings settings.  Settings will be saved to snipescan.json')
-        self.config = ConfigManager(filename="snipescan.json")
+        logger.debug('Set up mappings for savings settings.  Settings will be saved to snipeassist.json')
+        self.config = ConfigManager(filename="snipeassist.json")
         self.config.add_handler('comboBoxCompany', self.comboBoxCompany)
         self.config.add_handler('comboBoxModel', self.comboBoxModel)
         self.config.add_handler('comboBoxLocation', self.comboBoxLocation)
