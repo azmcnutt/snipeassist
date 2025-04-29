@@ -1,4 +1,4 @@
-# snipescan
+# snipeassist
 A simple Python program to scan assets into SnipeIT.
 
 Tested on Python Version 3.11 and Windows 11.  It may run on Linux, more testing is required.  It will not run on ChromeOS Linux.
@@ -20,10 +20,10 @@ First you will need a working installation of [SnipeIT](https://snipeitapp.com/)
    1. To install Python enter ```winget install Python.Python.3.11```
 5. Install pipenv: ```pip install pipenv```
 6. Install Git: ```Git.Git```
-7. In the terminal/command prompt navigate to the folder where you would like to clone SnipeScan.  Please note: git will create a folder named snipescan and then download everything in that folder.
-8. Clone the snipescan repository:  ```git clone https://github.com/azmcnutt/snipescan.git```
-9.  Change into the snipescan folder ```cd snipescan```
-10. Make a copy of the setting.example.py file:  ```copy snipescan\setting.example.py snipescan\settings.py```
+7. In the terminal/command prompt navigate to the folder where you would like to clone SnipeAssist.  Please note: git will create a folder named snipeassist and then download everything in that folder.
+8. Clone the snipeassist repository:  ```git clone https://github.com/azmcnutt/snipeassist.git```
+9.  Change into the snipeassist folder ```cd snipeassist```
+10. Make a copy of the setting.example.py file:  ```copy snipeassist\setting.example.py snipeassist\settings.py```
 11. make a folder for your virtual environment: ```mkdir venv```
 12. Now install the pipenv requirements:  ```pipenv install```
 13. Add your Snipe URL and API key to the setting.py file (for low security installation, the Snipe URL and API key can be stored directly in the setting.py file.  If you require more security, use environment variables).  The SnipeIT API Key can be quite long and should be entered on a single line.
@@ -42,10 +42,10 @@ First you will need a working installation of [SnipeIT](https://snipeitapp.com/)
         4.  LOG_SIZE = Size of the log file
         5.  LOG_COUNT = Number of log files to keep
         6.  LOGGING_CONFIG = {} - Python Logging config.  
-15. You should now be able to launch snipescan: ``` pipenv run python snipescan/snipe_scan.py```
+15. You should now be able to launch snipeassist: ``` pipenv run python snipeassist/snipe_assist.py```
 
-# Running snipescan
-1. On the snipescan screen, there are many options:
+# Running snipeassist
+1. On the snipeassist screen, there are many options:
    1. Required Items - the items across the top are required:
       1. Company:  Choose the company for the scanned assets
       2. Model: Choose the model for the scanned assets
@@ -74,15 +74,15 @@ First you will need a working installation of [SnipeIT](https://snipeitapp.com/)
       2. Then from the drop down, select User, Asset, or Location
       3. From the bottom drop down, select the user, asset, or location to check the newly created asset out.
          1. Please note:  If you have a large number of Users, Locations, and Assets it will take time for the screen to refresh when enabling check out.
-   6. Refresh Req Items Button - click this button to refresh the lists of required items.  Handy if you just created a model and do not want to exit and reopen snipescan.
+   6. Refresh Req Items Button - click this button to refresh the lists of required items.  Handy if you just created a model and do not want to exit and reopen snipeassist.
    7. Start Scann Button - Once all of the data has been entered, click this to start scanning.
 # Scanning
-Note: snpiescan is designed to work with barcode scanners that enter the scanned data and then press enter like a keyboard.  It is not compatible with serial or other non-HID scanners.
+Note: snpieassist is designed to work with barcode scanners that enter the scanned data and then press enter like a keyboard.  It is not compatible with serial or other non-HID scanners.
 
 1. In the scanning box, a label will appear above the text box requesting you scan a particular field.  The cursor should be in the text box.
 2. Scan the bar code for the field requested.  You should hear a "ding" when the data is accepted
 3. If there more item(s) to scan, the label will request the next item.
-4. Once all items have been scanned, snipescan will attempt to create the item.  If successful you will hear the success sound.
+4. Once all items have been scanned, snipeassist will attempt to create the item.  If successful you will hear the success sound.
    1. If you hear the warning sound, check the console log to see what went wrong.
 5. When finished scanning, click Stop Scanning.
 

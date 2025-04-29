@@ -13,7 +13,6 @@ from ui import Window
 
 def main():
     """Main function to load the program and get things started."""
-
     #let's setup logging
     logging.config.dictConfig(settings.LOGGING_CONFIG)
     logger = logging.getLogger('snipeassist')

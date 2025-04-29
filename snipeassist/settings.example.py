@@ -3,10 +3,11 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 # Paths
 SNIPEASSIST_PATH = os.path.dirname(os.path.abspath(__file__))
+
+# Load environment variables from .env file if it exists
+load_dotenv(dotenv_path=SNIPEASSIST_PATH + '\.env')
 
 # SnipeIT Information - Both the API Key and URL Are required.
 # URL must be in the format:
