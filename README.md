@@ -1,12 +1,12 @@
 # snipeassist
-A simple Python program to scan assets into SnipeIT.
+A simple Python program to scan assets into [Snipe-IT](https://snipeitapp.com/).
 
 Tested on Python Version 3.11 and Windows 11.  It may run on Linux, more testing is required.  It will not run on ChromeOS Linux.
 
 Requires python, git, pipenv
 # Installation (Windows)
 
-First you will need a working installation of [SnipeIT](https://snipeitapp.com/).  Hosted and self-install on premise supported
+First you will need a working installation of [Snipe-IT](https://snipeitapp.com/).  Hosted and self-install / on premises supported
 
 1. Get your SnipeIT URL.  This is address you use to access the root page of you SnipeIT install with ```/api/v1/``` added at the end (please note it should end with a trailing slash).
    1. Example: ```https://develop.snipeitapp.com/api/v1/```
@@ -14,21 +14,21 @@ First you will need a working installation of [SnipeIT](https://snipeitapp.com/)
    1. Click on your user account in the upper right of the SnipeIT screen and select Manage API Keys
    2. Click Create New
    3. Give the key a name and click Create New
-   4. Once generated, copy the API and save it someplace secure.  It will only be shown once and you cannot retrieve it again.  Protect it like a password.
+   4. Once generated, copy the API Key and save it someplace secure.  It will only be shown once and you cannot retrieve it again.  Protect it like a password.
 3. On your computer, open a terminal windows or command prompt
 4. Test to see if you have Python installed:  ```python --version```.  If you receive Python 3.11 (or similar) you should be good to go.  Otherwise:
    1. To install Python enter ```winget install Python.Python.3.11```
 5. Install pipenv: ```pip install pipenv```
-6. Install Git: ```Git.Git```
+6. Install Git: ```winget install Git.Git```
 7. In the terminal/command prompt navigate to the folder where you would like to clone SnipeAssist.  Please note: git will create a folder named snipeassist and then download everything in that folder.
 8. Clone the snipeassist repository:  ```git clone https://github.com/azmcnutt/snipeassist.git```
 9.  Change into the snipeassist folder ```cd snipeassist```
 10. Make a copy of the setting.example.py file:  ```copy snipeassist\setting.example.py snipeassist\settings.py```
-11. make a folder for your virtual environment: ```mkdir venv```
+11. make a folder for your virtual environment: ```mkdir .venv```
 12. Now install the pipenv requirements:  ```pipenv install```
 13. Add your Snipe URL and API key to the setting.py file (for low security installation, the Snipe URL and API key can be stored directly in the setting.py file.  If you require more security, use environment variables).  The SnipeIT API Key can be quite long and should be entered on a single line.
     1.  ```SNIPE_URL = 'https://develop.snipeitapp.com/api/v1/'```
-    2.  ```API_KEY = [APIKEY]```
+    2.  ```API_KEY = '[APIKEY]'```
 14. Optional settings:
     1.  SAVE_ON_EXIT = ```True```: settings will be saved when exiting the program and during scanning, ```False```: settings will only be saved when you click File --> Save
     2.  SOUND_DING = Path to a sound file to signify that something was scanned without error.
@@ -55,8 +55,8 @@ First you will need a working installation of [SnipeIT](https://snipeitapp.com/)
       5. Supplier:  Choose the supplier for the scanned assets
    2. Static Items - Asset properties that can be set to static items (tick the checkbox to enable and fill the fields).  These items match to SnipeIT Asset fields
       1. Asset Name and Append and Increment
-         1. When asset name is ticked, the asset name will be filled in.  If you also tick the append checkbox, the number enetered in the append box will be added to the name each time an asset is created.  The number will then be incremented and added to the next asset.
-         2. The append and increment setting is useful when scanning in groups of items (like lab computers).
+         1. When asset name is ticked, the asset name will be filled in.  If you also tick the append checkbox, the number entered in the append box will be added to the name each time an asset is created.  The number will then be incremented and added to the next asset.
+         2. The append and increment setting is useful when scanning in groups of items (like lab computers; i.e. Lab01, Lab02, Lab03, etc.).
       2. Purchase Date
       3. Order Number
       4. Purchase Cost
