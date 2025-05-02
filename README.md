@@ -23,7 +23,8 @@ First you will need a working installation of [Snipe-IT](https://snipeitapp.com/
 7. In the terminal/command prompt navigate to the folder where you would like to clone SnipeAssist.  Please note: git will create a folder named snipeassist and then download everything in that folder.
 8. Clone the snipeassist repository:  ```git clone https://github.com/azmcnutt/snipeassist.git```
 9.  Change into the snipeassist folder ```cd snipeassist```
-10. Make a copy of the setting.example.py file:  ```copy snipeassist\setting.example.py snipeassist\settings.py```
+10. Make a copy of the setting.example.py file:  ```copy snipeassist\.env.example snipeassist\.env```
+    1.  The unmodified example .env file should connect to the Snipe IT Demo Site.
 11. make a folder for your virtual environment: ```mkdir .venv```
 12. Now install the pipenv requirements:  ```pipenv install```
 13. Add your Snipe URL and API key to the setting.py file (for low security installation, the Snipe URL and API key can be stored directly in the setting.py file.  If you require more security, use environment variables).  The SnipeIT API Key can be quite long and should be entered on a single line.

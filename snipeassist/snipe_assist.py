@@ -19,7 +19,18 @@ def main():
     logger.info('***************************************')
     logger.info('          Snipe Assist starting')
     logger.info('***************************************')
-    logger.debug('Snipe URL: %s', settings.SNIPE_URL)
+    logger.debug('Snipe URL:            %s', settings.SNIPE_URL)
+    logger.debug('API Key:              [Hidden for security]')
+    logger.debug('Save on exit:         %s', settings.SAVE_ON_EXIT)
+    logger.debug('Ask before quit:      %s', settings.ASK_BEFORE_QUIT)
+    logger.debug('Sound Ding:           %s', settings.SOUND_DING)
+    logger.debug('Sound Success:        %s', settings.SOUND_SUCCESS)
+    logger.debug('Sound Warning:        %s', settings.SOUND_WARNING)
+    logger.debug('Log Level Console:    %s', settings.LOG_LEVEL)
+    logger.debug('Log Level File:       %s', settings.LOG_FILE_LEVEL)
+    logger.debug('Log File Name:        %s', settings.LOG_NAME)
+    logger.debug('Log File Size:        %s', settings.LOG_SIZE)
+    logger.debug('Log File Count:       %s', settings.LOG_COUNT)
 
     # Test connectivity to the Snipe server.  For a properly configured
     # Snipe deployment there should be at least one user returned.  If
