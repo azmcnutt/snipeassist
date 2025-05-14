@@ -1,13 +1,13 @@
 """ Settings for use throughout the program """
 import os
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 # Paths
 SNIPEASSIST_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # Load environment variables from .env file if it exists
-load_dotenv()
+load_dotenv(find_dotenv(SNIPEASSIST_PATH + '/.env'))
 
 # SnipeIT Information - Both the API Key and URL Are required.
 # URL must be in the format:
